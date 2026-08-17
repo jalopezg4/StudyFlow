@@ -1,7 +1,7 @@
-# Nuxt Minimal Starter
+# StudyFlow
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
-
+Shared Nuxt 4 + Vue 3 + TypeScript foundation for the StudyFlow app.
+See [`specs/001-project-bootstrap/quickstart.md`](specs/001-project-bootstrap/quickstart.md) for setup and validation.
 ## Setup
 
 Make sure to install dependencies with npm:
