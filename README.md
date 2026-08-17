@@ -4,21 +4,17 @@ Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduct
 
 ## Setup
 
-Make sure to install dependencies:
+Make sure to install dependencies with npm:
 
-```bash
-# npm
-npm install
+    npm install
 
-# pnpm
-pnpm install
+Copy the environment template and populate required values (do not commit secrets):
 
-# yarn
-yarn install
+    cp .env.example .env
 
-# bun
-bun install
-```
+Then start the app:
+
+    npm run dev
 
 ## Development Server
 
