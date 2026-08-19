@@ -15,6 +15,17 @@ TECH-03 establishes reusable security and quality conventions for future user st
 
 Contributors should follow the pull request security checklist in [`.github/pull_request_template.md`](.github/pull_request_template.md).
 
+## Authentication
+
+HU01/HU02 (registration, login, logout, and private route protection) are implemented on Supabase Auth. See [`specs/004-authentication/spec.md`](specs/004-authentication/spec.md) and [`specs/004-authentication/quickstart.md`](specs/004-authentication/quickstart.md) for the full spec and validation scenarios.
+
+To run auth locally, your Supabase project needs:
+
+- Email/password auth enabled (default).
+- **Confirm email** disabled under Authentication → Providers → Email (registration establishes a session immediately, per the feature's Clarifications).
+- **Minimum password length** set to `8` under Authentication → Policies.
+- `.env` populated with `NUXT_PUBLIC_SUPABASE_URL`, `NUXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` from Project Settings → API. Use the project's base URL (e.g. `https://<ref>.supabase.co`), not the `/rest/v1/` REST endpoint.
+
 ## CI/CD
 
 The repository uses GitHub Actions for validation and Vercel Git integration for deployment.
