@@ -1,11 +1,11 @@
 <script setup lang="ts">
 defineProps<{
-  id: string
-  autocomplete?: string
-}>()
+  id: string;
+  autocomplete?: string;
+}>();
 
-const modelValue = defineModel<string>({ required: true })
-const showPassword = ref(false)
+const modelValue = defineModel<string>({ required: true });
+const showPassword = ref(false);
 </script>
 
 <template>
@@ -16,7 +16,7 @@ const showPassword = ref(false)
       :type="showPassword ? 'text' : 'password'"
       :autocomplete="autocomplete"
       class="w-full rounded-md border border-slate-300 px-3 py-2 pr-10 text-sm focus:border-slate-500 focus:outline-none"
-    >
+    />
     <button
       type="button"
       tabindex="-1"
@@ -48,8 +48,12 @@ const showPassword = ref(false)
         stroke-linejoin="round"
       >
         <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
-        <path d="M10.73 5.08A10.94 10.94 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68" />
-        <path d="M6.61 6.61A13.53 13.53 0 0 0 1 12s4 8 11 8a10.66 10.66 0 0 0 5.39-1.61" />
+        <path
+          d="M10.73 5.08A10.94 10.94 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"
+        />
+        <path
+          d="M6.61 6.61A13.53 13.53 0 0 0 1 12s4 8 11 8a10.66 10.66 0 0 0 5.39-1.61"
+        />
         <line x1="1" y1="1" x2="23" y2="23" />
       </svg>
     </button>
