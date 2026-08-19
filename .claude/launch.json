@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "studyflow-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "studyflow-preview",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-r", "dotenv/config", ".output/server/index.mjs"],
+      "port": 3000
+    }
+  ]
+}
