@@ -7,6 +7,8 @@ export type SecurityErrorCode =
   | 'FORBIDDEN'
   | 'VALIDATION_ERROR'
   | 'INTERNAL_ERROR'
+  | 'NOT_FOUND'
+  | 'CONFLICT'
 
 export interface ValidationIssue {
   path: string

@@ -46,7 +46,9 @@ export function toSafeErrorResponse(error: unknown): SafeErrorResponse {
       knownCode === 'UNAUTHENTICATED' ||
       knownCode === 'FORBIDDEN' ||
       knownCode === 'VALIDATION_ERROR' ||
-      knownCode === 'INTERNAL_ERROR'
+      knownCode === 'INTERNAL_ERROR' ||
+      knownCode === 'NOT_FOUND' ||
+      knownCode === 'CONFLICT'
         ? knownCode
         : error.statusCode >= 500
           ? 'INTERNAL_ERROR'

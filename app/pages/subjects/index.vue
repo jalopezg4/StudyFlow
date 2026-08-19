@@ -1,20 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useTemplateRef } from 'vue'
 import SubjectForm from '~/components/subjects/SubjectForm.vue'
+import SubjectList from '~/components/subjects/SubjectList.vue'
 
-interface CreatedSubject {
-  id: string
-  name: string
-  description: string | null
-  createdAt: string
-}
+const subjectList = useTemplateRef('subjectList')
 
-// Session-local confirmation list only; a persisted subject listing is a
-// separate future user story (see specs/004-subject-management/research.md).
-const createdSubjects = ref<CreatedSubject[]>([])
-
-function handleCreated(subject: CreatedSubject) {
-  createdSubjects.value = [subject, ...createdSubjects.value]
+function handleCreated() {
+  subjectList.value?.refresh()
 }
 </script>
 
@@ -39,20 +31,8 @@ function handleCreated(subject: CreatedSubject) {
         </div>
       </div>
 
-      <section v-if="createdSubjects.length > 0" class="mt-6 rounded-lg bg-white p-8 shadow">
-        <h2 class="text-lg font-medium text-slate-900">Subjects created this session</h2>
-        <ul class="mt-4 flex flex-col gap-3">
-          <li
-            v-for="subject in createdSubjects"
-            :key="subject.id"
-            class="rounded-md border border-slate-200 px-4 py-3"
-          >
-            <p class="text-sm font-medium text-slate-900">{{ subject.name }}</p>
-            <p v-if="subject.description" class="mt-1 text-sm text-slate-500">
-              {{ subject.description }}
-            </p>
-          </li>
-        </ul>
+      <section class="mt-6 rounded-lg bg-white p-8 shadow">
+        <SubjectList ref="subjectList" />
       </section>
     </div>
   </div>
