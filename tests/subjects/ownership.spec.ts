@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { createTestEvent } from '../security/fixtures'
+import { createTestEvent, testSupabaseClient } from '../security/fixtures'
 
 vi.mock('../../server/utils/subjects/repository', () => ({
   createSubject: vi.fn(),
@@ -65,7 +65,7 @@ describe('POST /api/subjects - ownership cannot be spoofed (FR-007, FR-010)', ()
     })
 
     expect(mockedCreateSubject).toHaveBeenCalledTimes(1)
-    expect(mockedCreateSubject).toHaveBeenCalledWith('user-a', { name: 'Calculus I' })
+    expect(mockedCreateSubject).toHaveBeenCalledWith(testSupabaseClient, 'user-a', { name: 'Calculus I' })
   })
 })
 
@@ -76,7 +76,7 @@ describe('POST /api/subjects - per-request isolation across principals (SC-005)'
   // authenticated request's owner id leak into another's persistence call.
   beforeEach(() => {
     mockedCreateSubject.mockReset()
-    mockedCreateSubject.mockImplementation(async (userId, input) => ({
+    mockedCreateSubject.mockImplementation(async (_supabase, userId, input) => ({
       id: `subject-${userId}`,
       name: input.name,
       description: input.description ?? null,
@@ -95,8 +95,8 @@ describe('POST /api/subjects - per-request isolation across principals (SC-005)'
 
     expect(resultA.subject.id).toBe('subject-user-a')
     expect(resultB.subject.id).toBe('subject-user-b')
-    expect(mockedCreateSubject).toHaveBeenCalledWith('user-a', { name: 'Subject A' })
-    expect(mockedCreateSubject).toHaveBeenCalledWith('user-b', { name: 'Subject B' })
+    expect(mockedCreateSubject).toHaveBeenCalledWith(testSupabaseClient, 'user-a', { name: 'Subject A' })
+    expect(mockedCreateSubject).toHaveBeenCalledWith(testSupabaseClient, 'user-b', { name: 'Subject B' })
   })
 })
 
@@ -104,7 +104,7 @@ describe('GET /api/subjects/:id - cross-owner denial (CA03 AC3, FR-006, FR-007)'
   beforeEach(() => {
     mockedGetSubjectForOwner.mockReset()
     // Simulates the real owner-scoped query: only Student A's own id returns a row.
-    mockedGetSubjectForOwner.mockImplementation(async (userId, id) =>
+    mockedGetSubjectForOwner.mockImplementation(async (_supabase, userId, id) =>
       userId === 'user-a' && id === 'subject-a1'
         ? { id: 'subject-a1', name: 'Calculus I', description: null, createdAt: '2026-08-18T00:00:00.000Z' }
         : null
@@ -145,7 +145,7 @@ describe('PATCH /api/subjects/:id - cross-owner denial (CA03 AC1, FR-006, FR-007
       statusCode: 404,
       data: { code: 'NOT_FOUND' }
     })
-    expect(mockedUpdateSubject).toHaveBeenCalledWith('user-b', 'subject-a1', { name: 'Hijacked name' })
+    expect(mockedUpdateSubject).toHaveBeenCalledWith(testSupabaseClient, 'user-b', 'subject-a1', { name: 'Hijacked name' })
   })
 })
 
@@ -162,7 +162,7 @@ describe('DELETE /api/subjects/:id - cross-owner denial (CA03 AC2, FR-006, FR-00
       statusCode: 404,
       data: { code: 'NOT_FOUND' }
     })
-    expect(mockedDeleteSubject).toHaveBeenCalledWith('user-b', 'subject-a1')
+    expect(mockedDeleteSubject).toHaveBeenCalledWith(testSupabaseClient, 'user-b', 'subject-a1')
   })
 })
 

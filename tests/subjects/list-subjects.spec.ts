@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { createTestEvent } from '../security/fixtures'
+import { createTestEvent, testSupabaseClient } from '../security/fixtures'
 
 vi.mock('../../server/utils/subjects/repository', () => ({
   listSubjectsForOwner: vi.fn()
@@ -29,11 +29,11 @@ describe('GET /api/subjects - only-own-subjects listing (CA01)', () => {
         { id: 'subject-a1', name: 'Calculus I', description: null, createdAt: '2026-08-18T00:00:00.000Z' }
       ]
     })
-    expect(mockedListSubjectsForOwner).toHaveBeenCalledWith('user-a')
+    expect(mockedListSubjectsForOwner).toHaveBeenCalledWith(testSupabaseClient, 'user-a')
   })
 
   it('never returns a different principal\'s subjects, verified across two distinct requests', async () => {
-    mockedListSubjectsForOwner.mockImplementation(async (userId) => [
+    mockedListSubjectsForOwner.mockImplementation(async (_supabase, userId) => [
       { id: `subject-${userId}`, name: `Subject for ${userId}`, description: null, createdAt: '2026-08-18T00:00:00.000Z' }
     ])
 
