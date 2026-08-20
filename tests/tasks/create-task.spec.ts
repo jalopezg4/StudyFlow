@@ -65,7 +65,7 @@ describe('POST /api/tasks - valid creation (US1)', () => {
       }
     })
     expect(mockedGetSubjectForOwner).toHaveBeenCalledWith(testSupabaseClient, 'user-a', '11111111-1111-1111-1111-111111111111')
-    expect(mockedCreateStudyTask).toHaveBeenCalledWith('user-a', { subjectId: '11111111-1111-1111-1111-111111111111', title: 'Read chapter 3' })
+    expect(mockedCreateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-a', { subjectId: '11111111-1111-1111-1111-111111111111', title: 'Read chapter 3' })
   })
 
   it('creates a task with a title, description, and due date', async () => {

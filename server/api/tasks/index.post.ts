@@ -17,7 +17,7 @@ export async function handleCreateStudyTask(event: H3Event, rawBody: unknown) {
     throw createSafeHttpError(404, 'NOT_FOUND', 'Subject not found')
   }
 
-  const task = await createStudyTask(principal.userId, body)
+  const task = await createStudyTask(supabase, principal.userId, body)
 
   return { status: 'created' as const, task }
 }
