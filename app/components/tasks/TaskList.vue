@@ -5,6 +5,7 @@ import TaskEditForm from '~/components/tasks/TaskEditForm.vue'
 interface StudyTask {
   id: string
   subjectId: string
+  subjectName: string
   title: string
   description: string | null
   dueDate: string | null
@@ -142,6 +143,9 @@ defineExpose({ refresh: loadTasks })
         <div v-else class="flex flex-col gap-2">
           <div class="flex items-start justify-between gap-3">
             <div>
+              <span class="mr-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                {{ task.subjectName || 'Unknown subject' }}
+              </span>
               <strong
                 class="font-medium"
                 :class="{ 'text-slate-400 line-through': task.status === 'completed' }"

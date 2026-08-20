@@ -20,6 +20,7 @@ describe('GET /api/tasks - only-own-tasks listing (US1)', () => {
       {
         id: 'task-a1',
         subjectId: 'subject-a1',
+        subjectName: 'Calculus I',
         title: 'Read chapter 3',
         description: null,
         dueDate: null,
@@ -37,6 +38,7 @@ describe('GET /api/tasks - only-own-tasks listing (US1)', () => {
         {
           id: 'task-a1',
           subjectId: 'subject-a1',
+          subjectName: 'Calculus I',
           title: 'Read chapter 3',
           description: null,
           dueDate: null,

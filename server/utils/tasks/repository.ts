@@ -5,6 +5,7 @@ import type { CreateStudyTaskInput, UpdateStudyTaskInput } from './schemas'
 export interface StudyTask {
   id: string
   subjectId: string
+  subjectName: string
   title: string
   description: string | null
   dueDate: string | null
@@ -20,14 +21,20 @@ interface StudyTaskRow {
   due_date: string | null
   status: 'pending' | 'completed'
   created_at: string
+  subjects: { name: string }[] | null
 }
 
-const TASK_COLUMNS = 'id, subject_id, title, description, due_date, status, created_at'
+// Embeds the owning subject's name via the subject_id foreign key so the
+// client can show "which subject is this task under" without a second
+// round trip (previously omitted entirely — the task list showed no
+// subject relationship at all).
+const TASK_COLUMNS = 'id, subject_id, title, description, due_date, status, created_at, subjects(name)'
 
 function toStudyTask(row: StudyTaskRow): StudyTask {
   return {
     id: row.id,
     subjectId: row.subject_id,
+    subjectName: row.subjects?.[0]?.name ?? '',
     title: row.title,
     description: row.description,
     dueDate: row.due_date,

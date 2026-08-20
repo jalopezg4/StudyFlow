@@ -4,6 +4,7 @@ import { reactive, ref } from 'vue'
 interface StudyTask {
   id: string
   subjectId: string
+  subjectName: string
   title: string
   description: string | null
   dueDate: string | null
