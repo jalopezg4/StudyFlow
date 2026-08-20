@@ -32,15 +32,15 @@ function validate(): string | null {
   const trimmedName = form.name.trim()
 
   if (trimmedName.length === 0) {
-    return 'El nombre es obligatorio.'
+    return 'Name is required.'
   }
 
   if (trimmedName.length > NAME_MAX_LENGTH) {
-    return `El nombre no puede superar ${NAME_MAX_LENGTH} caracteres.`
+    return `Name cannot exceed ${NAME_MAX_LENGTH} characters.`
   }
 
   if (form.description.trim().length > DESCRIPTION_MAX_LENGTH) {
-    return `La descripción no puede superar ${DESCRIPTION_MAX_LENGTH} caracteres.`
+    return `Description cannot exceed ${DESCRIPTION_MAX_LENGTH} characters.`
   }
 
   return null
@@ -48,7 +48,7 @@ function validate(): string | null {
 
 function extractErrorMessage(error: unknown): string {
   const fetchError = error as { data?: { error?: { message?: string } } }
-  return fetchError.data?.error?.message ?? 'No se pudo actualizar la materia. Inténtalo de nuevo.'
+  return fetchError.data?.error?.message ?? 'Could not update the subject. Please try again.'
 }
 
 async function handleSubmit() {
@@ -84,7 +84,7 @@ async function handleSubmit() {
 <template>
   <form novalidate class="flex flex-col gap-3" @submit.prevent="handleSubmit">
     <div class="flex flex-col gap-1">
-      <label :for="`subject-edit-name-${subject.id}`" class="text-sm font-medium text-slate-700">Nombre</label>
+      <label :for="`subject-edit-name-${subject.id}`" class="text-sm font-medium text-slate-700">Name</label>
       <input
         :id="`subject-edit-name-${subject.id}`"
         v-model="form.name"
@@ -97,7 +97,7 @@ async function handleSubmit() {
     </div>
 
     <div class="flex flex-col gap-1">
-      <label :for="`subject-edit-description-${subject.id}`" class="text-sm font-medium text-slate-700">Descripción (opcional)</label>
+      <label :for="`subject-edit-description-${subject.id}`" class="text-sm font-medium text-slate-700">Description (optional)</label>
       <textarea
         :id="`subject-edit-description-${subject.id}`"
         v-model="form.description"
@@ -113,7 +113,7 @@ async function handleSubmit() {
         :disabled="status === 'loading'"
         class="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
       >
-        {{ status === 'loading' ? 'Guardando...' : 'Guardar' }}
+        {{ status === 'loading' ? 'Saving…' : 'Save' }}
       </button>
       <button
         type="button"
@@ -121,7 +121,7 @@ async function handleSubmit() {
         class="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 disabled:opacity-60"
         @click="emit('cancel')"
       >
-        Cancelar
+        Cancel
       </button>
     </div>
 

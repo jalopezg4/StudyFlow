@@ -37,7 +37,7 @@ function handleUpdated(updated: Subject) {
 
 function extractErrorMessage(error: unknown): string {
   const fetchError = error as { data?: { error?: { message?: string } } }
-  return fetchError.data?.error?.message ?? 'No se pudieron cargar las materias. Inténtalo de nuevo.'
+  return fetchError.data?.error?.message ?? 'Could not load subjects. Please try again.'
 }
 
 function requestDelete(id: string) {
@@ -61,7 +61,7 @@ async function confirmDelete(id: string) {
   } catch (error) {
     const fetchError = error as { data?: { error?: { message?: string } } }
     deleteErrors[id] = fetchError.data?.error?.message
-      ?? 'No se pudo eliminar la materia. Inténtalo de nuevo.'
+      ?? 'Could not delete the subject. Please try again.'
   } finally {
     deletingId.value = null
   }
@@ -88,10 +88,10 @@ defineExpose({ refresh: loadSubjects })
 
 <template>
   <div class="flex flex-col gap-3">
-    <h2 class="text-lg font-medium text-slate-900">Mis materias</h2>
+    <h2 class="text-lg font-medium text-slate-900">My subjects</h2>
 
     <p v-if="status === 'loading'" class="text-sm text-slate-600">
-      Cargando materias...
+      Loading subjects…
     </p>
 
     <p v-else-if="status === 'error'" class="text-sm text-red-700" role="alert">
@@ -99,7 +99,7 @@ defineExpose({ refresh: loadSubjects })
     </p>
 
     <p v-else-if="subjects.length === 0" class="text-sm text-slate-600">
-      Todavía no tienes materias registradas.
+      You don't have any subjects yet.
     </p>
 
     <ul v-else class="flex flex-col gap-2">
@@ -126,7 +126,7 @@ defineExpose({ refresh: loadSubjects })
                 class="text-sm font-medium text-slate-600 underline"
                 @click="startEditing(subject.id)"
               >
-                Editar
+                Edit
               </button>
               <button
                 v-if="confirmingDeleteId !== subject.id"
@@ -134,13 +134,13 @@ defineExpose({ refresh: loadSubjects })
                 class="text-sm font-medium text-red-700 underline"
                 @click="requestDelete(subject.id)"
               >
-                Eliminar
+                Delete
               </button>
             </div>
           </div>
 
           <div v-if="confirmingDeleteId === subject.id" class="flex flex-col gap-1">
-            <p class="text-sm text-slate-700">¿Eliminar esta materia? Esta acción no se puede deshacer.</p>
+            <p class="text-sm text-slate-700">Delete this subject? This action cannot be undone.</p>
             <div class="flex gap-2">
               <button
                 type="button"
@@ -148,7 +148,7 @@ defineExpose({ refresh: loadSubjects })
                 class="rounded-md bg-red-700 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
                 @click="confirmDelete(subject.id)"
               >
-                {{ deletingId === subject.id ? 'Eliminando...' : 'Confirmar eliminación' }}
+                {{ deletingId === subject.id ? 'Deleting…' : 'Confirm delete' }}
               </button>
               <button
                 type="button"
@@ -156,7 +156,7 @@ defineExpose({ refresh: loadSubjects })
                 class="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 disabled:opacity-60"
                 @click="cancelDelete(subject.id)"
               >
-                Cancelar
+                Cancel
               </button>
             </div>
             <p v-if="deleteErrors[subject.id]" class="text-sm text-red-700" role="alert">
