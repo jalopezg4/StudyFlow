@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import SubjectList from '~/components/subjects/SubjectList.vue'
+
 const { logout } = useAuth()
 const isLoggingOut = ref(false)
 
@@ -35,6 +37,10 @@ async function onLogout() {
       >
         Create subject
       </NuxtLink>
+
+      <div class="mt-8 border-t border-slate-200 pt-6">
+        <SubjectList />
+      </div>
     </div>
   </div>
 </template>
