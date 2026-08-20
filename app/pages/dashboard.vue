@@ -29,6 +29,12 @@ async function onLogout() {
       <p class="mt-4 text-slate-600">
         Welcome to StudyFlow. This page is only reachable while you are logged in.
       </p>
+      <NuxtLink
+        to="/subjects"
+        class="mt-6 inline-flex w-fit items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
+      >
+        Crear materia
+      </NuxtLink>
     </div>
   </div>
 </template>

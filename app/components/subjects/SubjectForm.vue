@@ -81,45 +81,58 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <form novalidate class="flex max-w-md flex-col gap-4" @submit.prevent="handleSubmit">
-    <div class="flex flex-col gap-1">
-      <label for="subject-name" class="text-sm font-medium text-slate-700">Nombre</label>
+  <form novalidate class="flex flex-col gap-4" @submit.prevent="handleSubmit">
+    <div>
+      <label for="subject-name" class="block text-sm font-medium text-slate-700">Nombre</label>
       <input
         id="subject-name"
         v-model="form.name"
         type="text"
+        placeholder="p. ej. Cálculo I"
         :maxlength="NAME_MAX_LENGTH"
         :disabled="status === 'loading'"
         required
-        class="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
+        class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none disabled:bg-slate-100"
       >
+      <p class="mt-1 text-xs text-slate-400">{{ form.name.length }}/{{ NAME_MAX_LENGTH }}</p>
     </div>
 
-    <div class="flex flex-col gap-1">
-      <label for="subject-description" class="text-sm font-medium text-slate-700">Descripción (opcional)</label>
+    <div>
+      <label for="subject-description" class="block text-sm font-medium text-slate-700">
+        Descripción <span class="font-normal text-slate-400">(opcional)</span>
+      </label>
       <textarea
         id="subject-description"
         v-model="form.description"
+        rows="3"
+        placeholder="Notas breves sobre esta materia"
         :maxlength="DESCRIPTION_MAX_LENGTH"
         :disabled="status === 'loading'"
-        class="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
+        class="mt-1 w-full resize-none rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none disabled:bg-slate-100"
       />
+      <p class="mt-1 text-xs text-slate-400">
+        {{ form.description.length }}/{{ DESCRIPTION_MAX_LENGTH }}
+      </p>
     </div>
+
+    <p v-if="status === 'error'" class="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+      {{ errorMessage }}
+    </p>
+
+    <p
+      v-if="status === 'success'"
+      class="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700"
+      role="status"
+    >
+      Materia creada correctamente.
+    </p>
 
     <button
       type="submit"
       :disabled="status === 'loading'"
-      class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+      class="w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
     >
-      {{ status === 'loading' ? 'Creando...' : 'Crear materia' }}
+      {{ status === 'loading' ? 'Creando…' : 'Crear materia' }}
     </button>
-
-    <p v-if="status === 'error'" class="text-sm text-red-700" role="alert">
-      {{ errorMessage }}
-    </p>
-
-    <p v-if="status === 'success'" class="text-sm text-green-700" role="status">
-      Materia creada correctamente.
-    </p>
   </form>
 </template>
