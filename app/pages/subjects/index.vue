@@ -25,13 +25,13 @@ function handleCreated(subject: CreatedSubject) {
         to="/dashboard"
         class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900"
       >
-        ← Volver al dashboard
+        ← Back to dashboard
       </NuxtLink>
 
       <div class="rounded-lg bg-white p-8 shadow">
-        <h1 class="text-2xl font-semibold text-slate-900">Nueva materia</h1>
+        <h1 class="text-2xl font-semibold text-slate-900">New subject</h1>
         <p class="mt-1 text-sm text-slate-500">
-          Crea una materia para organizar tus tareas y sesiones de estudio.
+          Create a subject to organize your tasks and study sessions.
         </p>
 
         <div class="mt-6">
@@ -40,7 +40,7 @@ function handleCreated(subject: CreatedSubject) {
       </div>
 
       <section v-if="createdSubjects.length > 0" class="mt-6 rounded-lg bg-white p-8 shadow">
-        <h2 class="text-lg font-medium text-slate-900">Materias creadas en esta sesión</h2>
+        <h2 class="text-lg font-medium text-slate-900">Subjects created this session</h2>
         <ul class="mt-4 flex flex-col gap-3">
           <li
             v-for="subject in createdSubjects"

@@ -33,7 +33,7 @@ async function onLogout() {
         to="/subjects"
         class="mt-6 inline-flex w-fit items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
       >
-        Crear materia
+        Create subject
       </NuxtLink>
     </div>
   </div>

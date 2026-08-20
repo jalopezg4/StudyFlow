@@ -29,15 +29,15 @@ function validate(): string | null {
   const trimmedName = form.name.trim()
 
   if (trimmedName.length === 0) {
-    return 'El nombre es obligatorio.'
+    return 'Name is required.'
   }
 
   if (trimmedName.length > NAME_MAX_LENGTH) {
-    return `El nombre no puede superar ${NAME_MAX_LENGTH} caracteres.`
+    return `Name cannot exceed ${NAME_MAX_LENGTH} characters.`
   }
 
   if (form.description.trim().length > DESCRIPTION_MAX_LENGTH) {
-    return `La descripción no puede superar ${DESCRIPTION_MAX_LENGTH} caracteres.`
+    return `Description cannot exceed ${DESCRIPTION_MAX_LENGTH} characters.`
   }
 
   return null
@@ -45,7 +45,7 @@ function validate(): string | null {
 
 function extractErrorMessage(error: unknown): string {
   const fetchError = error as { data?: { error?: { message?: string } } }
-  return fetchError.data?.error?.message ?? 'No se pudo crear la materia. Inténtalo de nuevo.'
+  return fetchError.data?.error?.message ?? 'Could not create the subject. Please try again.'
 }
 
 async function handleSubmit() {
@@ -83,12 +83,12 @@ async function handleSubmit() {
 <template>
   <form novalidate class="flex flex-col gap-4" @submit.prevent="handleSubmit">
     <div>
-      <label for="subject-name" class="block text-sm font-medium text-slate-700">Nombre</label>
+      <label for="subject-name" class="block text-sm font-medium text-slate-700">Name</label>
       <input
         id="subject-name"
         v-model="form.name"
         type="text"
-        placeholder="p. ej. Cálculo I"
+        placeholder="e.g. Calculus I"
         :maxlength="NAME_MAX_LENGTH"
         :disabled="status === 'loading'"
         required
@@ -99,13 +99,13 @@ async function handleSubmit() {
 
     <div>
       <label for="subject-description" class="block text-sm font-medium text-slate-700">
-        Descripción <span class="font-normal text-slate-400">(opcional)</span>
+        Description <span class="font-normal text-slate-400">(optional)</span>
       </label>
       <textarea
         id="subject-description"
         v-model="form.description"
         rows="3"
-        placeholder="Notas breves sobre esta materia"
+        placeholder="Brief notes about this subject"
         :maxlength="DESCRIPTION_MAX_LENGTH"
         :disabled="status === 'loading'"
         class="mt-1 w-full resize-none rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none disabled:bg-slate-100"
@@ -124,7 +124,7 @@ async function handleSubmit() {
       class="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700"
       role="status"
     >
-      Materia creada correctamente.
+      Subject created successfully.
     </p>
 
     <button
@@ -132,7 +132,7 @@ async function handleSubmit() {
       :disabled="status === 'loading'"
       class="w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
     >
-      {{ status === 'loading' ? 'Creando…' : 'Crear materia' }}
+      {{ status === 'loading' ? 'Creating…' : 'Create subject' }}
     </button>
   </form>
 </template>
