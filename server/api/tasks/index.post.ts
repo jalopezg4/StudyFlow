@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody, setResponseStatus, type H3Event } from 'h3'
-import { requireAuthenticatedPrincipal } from '../../utils/security/auth'
+import { requireAuthenticatedPrincipal, requireRequestSupabaseClient } from '../../utils/security/auth'
 import { validateWithSchema } from '../../utils/security/validation'
 import { createSafeHttpError } from '../../utils/security/errors'
 import { executeProtectedHandler } from '../security/_shared'
@@ -9,9 +9,10 @@ import { getSubjectForOwner } from '../../utils/subjects/repository'
 
 export async function handleCreateStudyTask(event: H3Event, rawBody: unknown) {
   const principal = requireAuthenticatedPrincipal(event)
+  const supabase = requireRequestSupabaseClient(event)
   const body = validateWithSchema(CreateStudyTaskSchema, rawBody, 'body')
 
-  const subject = await getSubjectForOwner(principal.userId, body.subjectId)
+  const subject = await getSubjectForOwner(supabase, principal.userId, body.subjectId)
   if (!subject) {
     throw createSafeHttpError(404, 'NOT_FOUND', 'Subject not found')
   }
