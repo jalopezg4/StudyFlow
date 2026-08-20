@@ -38,8 +38,16 @@ describe('resolveRouteGuardAction', () => {
     expect(action).toEqual({ type: 'allow' })
   })
 
+  it('redirects unauthenticated visitors from the root path to /login', () => {
+    expect(resolveRouteGuardAction('/', false)).toEqual({ type: 'redirect', to: '/login' })
+  })
+
+  it('redirects authenticated visitors from the root path to /dashboard', () => {
+    expect(resolveRouteGuardAction('/', true)).toEqual({ type: 'redirect', to: '/dashboard' })
+  })
+
   it('allows any visitor on a public path unrelated to auth', () => {
-    expect(resolveRouteGuardAction('/', false)).toEqual({ type: 'allow' })
-    expect(resolveRouteGuardAction('/', true)).toEqual({ type: 'allow' })
+    expect(resolveRouteGuardAction('/some-public-page', false)).toEqual({ type: 'allow' })
+    expect(resolveRouteGuardAction('/some-public-page', true)).toEqual({ type: 'allow' })
   })
 })

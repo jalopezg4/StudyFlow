@@ -12,6 +12,10 @@ export function isAuthOnlyPath(path: string): boolean {
 export type RouteGuardAction = { type: 'allow' } | { type: 'redirect'; to: string }
 
 export function resolveRouteGuardAction(path: string, isAuthenticated: boolean): RouteGuardAction {
+  if (path === '/') {
+    return { type: 'redirect', to: isAuthenticated ? '/dashboard' : '/login' }
+  }
+
   if (isPrivatePath(path) && !isAuthenticated) {
     return { type: 'redirect', to: '/login' }
   }
