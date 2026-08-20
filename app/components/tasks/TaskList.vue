@@ -37,7 +37,9 @@ function handleUpdated(updated: StudyTask) {
   if (index !== -1) {
     tasks.value[index] = updated
   }
-  editingId.value = null
+  if (editingId.value === updated.id) {
+    editingId.value = null
+  }
 }
 
 function extractErrorMessage(error: unknown): string {

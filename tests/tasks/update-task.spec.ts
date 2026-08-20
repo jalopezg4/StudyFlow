@@ -24,7 +24,7 @@ describe('PATCH /api/tasks/:id - valid partial updates (US2)', () => {
 
   it('updates the title only', async () => {
     mockedUpdateStudyTask.mockResolvedValue({
-      id: 'task-1',
+      id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
       subjectId: 'subject-1',
       title: 'Read chapters 3-4',
       description: null,
@@ -34,12 +34,12 @@ describe('PATCH /api/tasks/:id - valid partial updates (US2)', () => {
     })
 
     const event = createTestEvent('user-a')
-    const result = await handleUpdateStudyTask(event, { id: 'task-1' }, { title: 'Read chapters 3-4' })
+    const result = await handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, { title: 'Read chapters 3-4' })
 
     expect(result).toEqual({
       status: 'updated',
       task: {
-        id: 'task-1',
+        id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
         subjectId: 'subject-1',
         title: 'Read chapters 3-4',
         description: null,
@@ -48,12 +48,12 @@ describe('PATCH /api/tasks/:id - valid partial updates (US2)', () => {
         createdAt: '2026-08-19T00:00:00.000Z'
       }
     })
-    expect(mockedUpdateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'task-1', { title: 'Read chapters 3-4' })
+    expect(mockedUpdateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'cccccccc-cccc-cccc-cccc-cccccccccccc', { title: 'Read chapters 3-4' })
   })
 
   it('updates the description only', async () => {
     mockedUpdateStudyTask.mockResolvedValue({
-      id: 'task-1',
+      id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
       subjectId: 'subject-1',
       title: 'Read chapter 3',
       description: 'Updated note',
@@ -63,14 +63,14 @@ describe('PATCH /api/tasks/:id - valid partial updates (US2)', () => {
     })
 
     const event = createTestEvent('user-a')
-    const result = await handleUpdateStudyTask(event, { id: 'task-1' }, { description: 'Updated note' })
+    const result = await handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, { description: 'Updated note' })
 
     expect(result.task.description).toBe('Updated note')
   })
 
   it('updates the due date only', async () => {
     mockedUpdateStudyTask.mockResolvedValue({
-      id: 'task-1',
+      id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
       subjectId: 'subject-1',
       title: 'Read chapter 3',
       description: null,
@@ -80,14 +80,14 @@ describe('PATCH /api/tasks/:id - valid partial updates (US2)', () => {
     })
 
     const event = createTestEvent('user-a')
-    const result = await handleUpdateStudyTask(event, { id: 'task-1' }, { dueDate: '2026-09-05' })
+    const result = await handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, { dueDate: '2026-09-05' })
 
     expect(result.task.dueDate).toBe('2026-09-05')
   })
 
   it('marks a task as completed', async () => {
     mockedUpdateStudyTask.mockResolvedValue({
-      id: 'task-1',
+      id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
       subjectId: 'subject-1',
       title: 'Read chapter 3',
       description: null,
@@ -97,15 +97,15 @@ describe('PATCH /api/tasks/:id - valid partial updates (US2)', () => {
     })
 
     const event = createTestEvent('user-a')
-    const result = await handleUpdateStudyTask(event, { id: 'task-1' }, { status: 'completed' })
+    const result = await handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, { status: 'completed' })
 
     expect(result.task.status).toBe('completed')
-    expect(mockedUpdateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'task-1', { status: 'completed' })
+    expect(mockedUpdateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'cccccccc-cccc-cccc-cccc-cccccccccccc', { status: 'completed' })
   })
 
   it('marks a completed task back to pending', async () => {
     mockedUpdateStudyTask.mockResolvedValue({
-      id: 'task-1',
+      id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
       subjectId: 'subject-1',
       title: 'Read chapter 3',
       description: null,
@@ -115,14 +115,14 @@ describe('PATCH /api/tasks/:id - valid partial updates (US2)', () => {
     })
 
     const event = createTestEvent('user-a')
-    const result = await handleUpdateStudyTask(event, { id: 'task-1' }, { status: 'pending' })
+    const result = await handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, { status: 'pending' })
 
     expect(result.task.status).toBe('pending')
   })
 
   it('updates multiple fields at once', async () => {
     mockedUpdateStudyTask.mockResolvedValue({
-      id: 'task-1',
+      id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
       subjectId: 'subject-1',
       title: 'Read chapters 3-4',
       description: 'Updated note',
@@ -132,18 +132,44 @@ describe('PATCH /api/tasks/:id - valid partial updates (US2)', () => {
     })
 
     const event = createTestEvent('user-a')
-    await handleUpdateStudyTask(event, { id: 'task-1' }, {
+    await handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, {
       title: 'Read chapters 3-4',
       description: 'Updated note',
       dueDate: '2026-09-05',
       status: 'completed'
     })
 
-    expect(mockedUpdateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'task-1', {
+    expect(mockedUpdateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'cccccccc-cccc-cccc-cccc-cccccccccccc', {
       title: 'Read chapters 3-4',
       description: 'Updated note',
       dueDate: '2026-09-05',
       status: 'completed'
+    })
+  })
+
+  it('clears an existing description and due date via an explicit empty string', async () => {
+    mockedUpdateStudyTask.mockResolvedValue({
+      id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
+      subjectId: 'subject-1',
+      title: 'Read chapter 3',
+      description: null,
+      dueDate: null,
+      status: 'pending',
+      createdAt: '2026-08-19T00:00:00.000Z'
+    })
+
+    const event = createTestEvent('user-a')
+    const result = await handleUpdateStudyTask(
+      event,
+      { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' },
+      { description: '', dueDate: '' }
+    )
+
+    expect(result.task.description).toBeNull()
+    expect(result.task.dueDate).toBeNull()
+    expect(mockedUpdateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'cccccccc-cccc-cccc-cccc-cccccccccccc', {
+      description: null,
+      dueDate: null
     })
   })
 })
@@ -157,7 +183,7 @@ describe('PATCH /api/tasks/:id - invalid update rejection (US2)', () => {
     const event = createTestEvent('user-a')
 
     await expectSecurityError(
-      handleUpdateStudyTask(event, { id: 'task-1' }, {}),
+      handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, {}),
       422,
       'VALIDATION_ERROR'
     )
@@ -168,7 +194,7 @@ describe('PATCH /api/tasks/:id - invalid update rejection (US2)', () => {
     const event = createTestEvent('user-a')
 
     await expectSecurityError(
-      handleUpdateStudyTask(event, { id: 'task-1' }, { title: '' }),
+      handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, { title: '' }),
       422,
       'VALIDATION_ERROR'
     )
@@ -179,7 +205,7 @@ describe('PATCH /api/tasks/:id - invalid update rejection (US2)', () => {
     const event = createTestEvent('user-a')
 
     await expectSecurityError(
-      handleUpdateStudyTask(event, { id: 'task-1' }, { title: 'a'.repeat(101) }),
+      handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, { title: 'a'.repeat(101) }),
       422,
       'VALIDATION_ERROR'
     )
@@ -190,7 +216,7 @@ describe('PATCH /api/tasks/:id - invalid update rejection (US2)', () => {
     const event = createTestEvent('user-a')
 
     await expectSecurityError(
-      handleUpdateStudyTask(event, { id: 'task-1' }, { description: 'a'.repeat(501) }),
+      handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, { description: 'a'.repeat(501) }),
       422,
       'VALIDATION_ERROR'
     )
@@ -201,7 +227,7 @@ describe('PATCH /api/tasks/:id - invalid update rejection (US2)', () => {
     const event = createTestEvent('user-a')
 
     await expectSecurityError(
-      handleUpdateStudyTask(event, { id: 'task-1' }, { dueDate: 'not-a-date' }),
+      handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, { dueDate: 'not-a-date' }),
       422,
       'VALIDATION_ERROR'
     )
@@ -212,7 +238,7 @@ describe('PATCH /api/tasks/:id - invalid update rejection (US2)', () => {
     const event = createTestEvent('user-a')
 
     await expectSecurityError(
-      handleUpdateStudyTask(event, { id: 'task-1' }, { status: 'archived' }),
+      handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, { status: 'archived' }),
       422,
       'VALIDATION_ERROR'
     )
@@ -229,7 +255,7 @@ describe('PATCH /api/tasks/:id - unauthenticated rejection (FR-009)', () => {
     const event = createTestEvent()
 
     await expectSecurityError(
-      handleUpdateStudyTask(event, { id: 'task-1' }, { title: 'Read chapter 3' }),
+      handleUpdateStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' }, { title: 'Read chapter 3' }),
       401,
       'UNAUTHENTICATED'
     )

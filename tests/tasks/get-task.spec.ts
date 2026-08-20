@@ -17,7 +17,7 @@ describe('GET /api/tasks/:id - retrieve an owned task (US3 AC1, positive path)',
 
   it('returns the task when it belongs to the requesting principal', async () => {
     mockedGetStudyTaskForOwner.mockResolvedValue({
-      id: 'task-1',
+      id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
       subjectId: 'subject-1',
       title: 'Read chapter 3',
       description: 'Focus on section 3.2',
@@ -27,12 +27,12 @@ describe('GET /api/tasks/:id - retrieve an owned task (US3 AC1, positive path)',
     })
 
     const event = createTestEvent('user-a')
-    const result = await handleGetStudyTask(event, { id: 'task-1' })
+    const result = await handleGetStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' })
 
     expect(result).toEqual({
       status: 'ok',
       task: {
-        id: 'task-1',
+        id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
         subjectId: 'subject-1',
         title: 'Read chapter 3',
         description: 'Focus on section 3.2',
@@ -41,7 +41,7 @@ describe('GET /api/tasks/:id - retrieve an owned task (US3 AC1, positive path)',
         createdAt: '2026-08-19T00:00:00.000Z'
       }
     })
-    expect(mockedGetStudyTaskForOwner).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'task-1')
+    expect(mockedGetStudyTaskForOwner).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'cccccccc-cccc-cccc-cccc-cccccccccccc')
   })
 })
 
@@ -53,7 +53,7 @@ describe('GET /api/tasks/:id - unauthenticated rejection (FR-009)', () => {
   it('rejects a request with no authenticated principal before reading any data', async () => {
     const event = createTestEvent()
 
-    await expect(handleGetStudyTask(event, { id: 'task-1' })).rejects.toMatchObject({
+    await expect(handleGetStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' })).rejects.toMatchObject({
       statusCode: 401,
       data: { code: 'UNAUTHENTICATED' }
     })

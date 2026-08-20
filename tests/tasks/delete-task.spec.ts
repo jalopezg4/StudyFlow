@@ -21,7 +21,7 @@ describe('DELETE /api/tasks/:id - delete an owned task (US4)', () => {
   it('deletes the task and it no longer appears in a subsequent listing', async () => {
     const fakeStore = [
       {
-        id: 'task-1',
+        id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
         subjectId: 'subject-1',
         title: 'Read chapter 3',
         description: null,
@@ -38,10 +38,10 @@ describe('DELETE /api/tasks/:id - delete an owned task (US4)', () => {
     mockedListStudyTasksForOwner.mockImplementation(async () => [...fakeStore])
 
     const event = createTestEvent('user-a')
-    const result = await handleDeleteStudyTask(event, { id: 'task-1' })
+    const result = await handleDeleteStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' })
 
-    expect(result).toEqual({ status: 'deleted', id: 'task-1' })
-    expect(mockedDeleteStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'task-1')
+    expect(result).toEqual({ status: 'deleted', id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' })
+    expect(mockedDeleteStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'cccccccc-cccc-cccc-cccc-cccccccccccc')
 
     const listing = await listStudyTasksForOwner(testSupabaseClient, 'user-a')
     expect(listing).toEqual([])
@@ -64,7 +64,7 @@ describe('DELETE /api/tasks/:id - nonexistent or already-deleted task (US4 AC2)'
 
     const event = createTestEvent('user-a')
 
-    await expect(handleDeleteStudyTask(event, { id: 'nonexistent' })).rejects.toMatchObject({
+    await expect(handleDeleteStudyTask(event, { id: 'dddddddd-dddd-dddd-dddd-dddddddddddd' })).rejects.toMatchObject({
       statusCode: 404,
       data: { code: 'NOT_FOUND' }
     })
@@ -79,7 +79,7 @@ describe('DELETE /api/tasks/:id - unauthenticated rejection (FR-009)', () => {
   it('rejects a request with no authenticated principal before deleting anything', async () => {
     const event = createTestEvent()
 
-    await expect(handleDeleteStudyTask(event, { id: 'task-1' })).rejects.toMatchObject({
+    await expect(handleDeleteStudyTask(event, { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc' })).rejects.toMatchObject({
       statusCode: 401,
       data: { code: 'UNAUTHENTICATED' }
     })

@@ -287,4 +287,49 @@ describe('UpdateStudyTaskSchema', () => {
       expect(result.data.title).toBe('Read chapters 3-4')
     }
   })
+
+  it('rejects a calendar-invalid date that Date.parse would otherwise roll over (e.g. Feb 31)', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ dueDate: '2026-02-31' })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('clears an existing description when an empty string is explicitly sent', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ description: '' })
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.description).toBeNull()
+    }
+  })
+
+  it('clears an existing due date when an empty string is explicitly sent', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ dueDate: '' })
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.dueDate).toBeNull()
+    }
+  })
+
+  it('leaves description untouched (undefined) when the key is omitted entirely', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ title: 'Read chapters 3-4' })
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.description).toBeUndefined()
+    }
+  })
+})
+
+describe('CreateStudyTaskSchema calendar-date validation', () => {
+  it('rejects a calendar-invalid date that Date.parse would otherwise roll over (e.g. Feb 31)', () => {
+    const result = CreateStudyTaskSchema.safeParse({
+      subjectId: '11111111-1111-1111-1111-111111111111',
+      title: 'Read chapter 3',
+      dueDate: '2026-02-31'
+    })
+
+    expect(result.success).toBe(false)
+  })
 })

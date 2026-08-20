@@ -191,9 +191,9 @@ describe('GET /api/tasks/:id - cross-owner denial (US3 AC1)', () => {
     mockedGetStudyTaskForOwner.mockReset()
     // Simulates the real owner-scoped query: only Student A's own id returns a row.
     mockedGetStudyTaskForOwner.mockImplementation(async (_supabase, userId, id) =>
-      userId === 'user-a' && id === 'task-a1'
+      userId === 'user-a' && id === 'aaaaaaaa-1111-1111-1111-111111111111'
         ? {
-            id: 'task-a1',
+            id: 'aaaaaaaa-1111-1111-1111-111111111111',
             subjectId: 'subject-a1',
             title: 'Read chapter 3',
             description: null,
@@ -208,7 +208,7 @@ describe('GET /api/tasks/:id - cross-owner denial (US3 AC1)', () => {
   it("denies Student B viewing Student A's task directly, without revealing it exists", async () => {
     const event = createTestEvent('user-b')
 
-    await expect(handleGetStudyTask(event, { id: 'task-a1' })).rejects.toMatchObject({
+    await expect(handleGetStudyTask(event, { id: 'aaaaaaaa-1111-1111-1111-111111111111' })).rejects.toMatchObject({
       statusCode: 404,
       data: { code: 'NOT_FOUND' }
     })
@@ -217,9 +217,9 @@ describe('GET /api/tasks/:id - cross-owner denial (US3 AC1)', () => {
   it('still allows Student A to view their own task, unaffected by the denial above', async () => {
     const event = createTestEvent('user-a')
 
-    await expect(handleGetStudyTask(event, { id: 'task-a1' })).resolves.toMatchObject({
+    await expect(handleGetStudyTask(event, { id: 'aaaaaaaa-1111-1111-1111-111111111111' })).resolves.toMatchObject({
       status: 'ok',
-      task: { id: 'task-a1' }
+      task: { id: 'aaaaaaaa-1111-1111-1111-111111111111' }
     })
   })
 })
@@ -234,19 +234,19 @@ describe('PATCH /api/tasks/:id - cross-owner denial (US3 AC2)', () => {
     const event = createTestEvent('user-b')
 
     await expect(
-      handleUpdateStudyTask(event, { id: 'task-a1' }, { title: 'Hijacked title' })
+      handleUpdateStudyTask(event, { id: 'aaaaaaaa-1111-1111-1111-111111111111' }, { title: 'Hijacked title' })
     ).rejects.toMatchObject({
       statusCode: 404,
       data: { code: 'NOT_FOUND' }
     })
-    expect(mockedUpdateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-b', 'task-a1', { title: 'Hijacked title' })
+    expect(mockedUpdateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-b', 'aaaaaaaa-1111-1111-1111-111111111111', { title: 'Hijacked title' })
   })
 
   it("denies Student B marking Student A's task as completed", async () => {
     const event = createTestEvent('user-b')
 
     await expect(
-      handleUpdateStudyTask(event, { id: 'task-a1' }, { status: 'completed' })
+      handleUpdateStudyTask(event, { id: 'aaaaaaaa-1111-1111-1111-111111111111' }, { status: 'completed' })
     ).rejects.toMatchObject({
       statusCode: 404,
       data: { code: 'NOT_FOUND' }
@@ -263,11 +263,11 @@ describe('DELETE /api/tasks/:id - cross-owner denial (US3 AC3)', () => {
   it("denies Student B deleting Student A's task and it remains present", async () => {
     const event = createTestEvent('user-b')
 
-    await expect(handleDeleteStudyTask(event, { id: 'task-a1' })).rejects.toMatchObject({
+    await expect(handleDeleteStudyTask(event, { id: 'aaaaaaaa-1111-1111-1111-111111111111' })).rejects.toMatchObject({
       statusCode: 404,
       data: { code: 'NOT_FOUND' }
     })
-    expect(mockedDeleteStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-b', 'task-a1')
+    expect(mockedDeleteStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-b', 'aaaaaaaa-1111-1111-1111-111111111111')
   })
 })
 
@@ -284,7 +284,7 @@ describe('Nonexistent task id is indistinguishable from a non-owned one (US3 AC4
   it('returns the same 404 NOT_FOUND shape for GET on an id that never existed', async () => {
     const event = createTestEvent('user-a')
 
-    await expect(handleGetStudyTask(event, { id: 'never-existed' })).rejects.toMatchObject({
+    await expect(handleGetStudyTask(event, { id: '00000000-0000-0000-0000-000000000000' })).rejects.toMatchObject({
       statusCode: 404,
       data: { code: 'NOT_FOUND' }
     })
@@ -294,7 +294,7 @@ describe('Nonexistent task id is indistinguishable from a non-owned one (US3 AC4
     const event = createTestEvent('user-a')
 
     await expect(
-      handleUpdateStudyTask(event, { id: 'never-existed' }, { title: 'Does not matter' })
+      handleUpdateStudyTask(event, { id: '00000000-0000-0000-0000-000000000000' }, { title: 'Does not matter' })
     ).rejects.toMatchObject({
       statusCode: 404,
       data: { code: 'NOT_FOUND' }
@@ -304,7 +304,7 @@ describe('Nonexistent task id is indistinguishable from a non-owned one (US3 AC4
   it('returns the same 404 NOT_FOUND shape for DELETE on an id that never existed', async () => {
     const event = createTestEvent('user-a')
 
-    await expect(handleDeleteStudyTask(event, { id: 'never-existed' })).rejects.toMatchObject({
+    await expect(handleDeleteStudyTask(event, { id: '00000000-0000-0000-0000-000000000000' })).rejects.toMatchObject({
       statusCode: 404,
       data: { code: 'NOT_FOUND' }
     })
