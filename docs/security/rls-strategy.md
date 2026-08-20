@@ -21,6 +21,7 @@ This document defines the StudyFlow baseline for user-owned data isolation.
 - Do not trust client-provided user id values as authorization evidence.
 - Protected server routes must check authentication and authorization before mutations.
 - Service-role keys are server-only and must never be exposed to browser code.
+- Repository functions for user-owned tables must run against the request-scoped Supabase client (`requireRequestSupabaseClient`, populated from the caller's own session by `server/middleware/auth.ts`), not a service-role client — the `service_role` JWT bypasses RLS entirely, which would silently turn the RLS policies above into dead code and leave ownership enforced only at the application layer.
 
 ## Future Feature Expectation
 

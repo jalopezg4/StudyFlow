@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { createTestEvent } from '../security/fixtures'
+import { createTestEvent, testSupabaseClient } from '../security/fixtures'
 
 vi.mock('../../server/utils/subjects/repository', () => ({
   deleteSubject: vi.fn(),
@@ -23,7 +23,7 @@ describe('DELETE /api/subjects/:id - delete an eligible subject (CA04, allowed c
       { id: 'subject-1', name: 'Calculus I', description: null, createdAt: '2026-08-18T00:00:00.000Z' }
     ]
 
-    mockedDeleteSubject.mockImplementation(async (_userId, id) => {
+    mockedDeleteSubject.mockImplementation(async (_supabase, _userId, id) => {
       const index = fakeStore.findIndex((subject) => subject.id === id)
       fakeStore.splice(index, 1)
     })
@@ -33,9 +33,9 @@ describe('DELETE /api/subjects/:id - delete an eligible subject (CA04, allowed c
     const result = await handleDeleteSubject(event, { id: 'subject-1' })
 
     expect(result).toEqual({ status: 'deleted', id: 'subject-1' })
-    expect(mockedDeleteSubject).toHaveBeenCalledWith('user-a', 'subject-1')
+    expect(mockedDeleteSubject).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'subject-1')
 
-    const listing = await listSubjectsForOwner('user-a')
+    const listing = await listSubjectsForOwner(testSupabaseClient, 'user-a')
     expect(listing).toEqual([])
   })
 })

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { createTestEvent } from '../security/fixtures'
+import { createTestEvent, testSupabaseClient } from '../security/fixtures'
 
 vi.mock('../../server/utils/subjects/repository', () => ({
   createSubject: vi.fn()
@@ -43,7 +43,7 @@ describe('POST /api/subjects - valid creation (CA01)', () => {
         createdAt: '2026-08-18T00:00:00.000Z'
       }
     })
-    expect(mockedCreateSubject).toHaveBeenCalledWith('user-a', { name: 'Calculus I' })
+    expect(mockedCreateSubject).toHaveBeenCalledWith(testSupabaseClient, 'user-a', { name: 'Calculus I' })
   })
 
   it('creates a subject with a name and description', async () => {
@@ -62,7 +62,7 @@ describe('POST /api/subjects - valid creation (CA01)', () => {
     })
 
     expect(result.subject.description).toBe('Mechanics and thermodynamics')
-    expect(mockedCreateSubject).toHaveBeenCalledWith('user-a', {
+    expect(mockedCreateSubject).toHaveBeenCalledWith(testSupabaseClient, 'user-a', {
       name: 'Physics I',
       description: 'Mechanics and thermodynamics'
     })

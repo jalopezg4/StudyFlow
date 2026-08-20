@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { createTestEvent } from '../security/fixtures'
+import { createTestEvent, testSupabaseClient } from '../security/fixtures'
 
 vi.mock('../../server/utils/subjects/repository', () => ({
   updateSubject: vi.fn()
@@ -42,7 +42,7 @@ describe('PATCH /api/subjects/:id - valid partial updates (CA02)', () => {
         createdAt: '2026-08-18T00:00:00.000Z'
       }
     })
-    expect(mockedUpdateSubject).toHaveBeenCalledWith('user-a', 'subject-1', { name: 'Calculus I - retake' })
+    expect(mockedUpdateSubject).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'subject-1', { name: 'Calculus I - retake' })
   })
 
   it('updates the description only', async () => {
@@ -57,7 +57,7 @@ describe('PATCH /api/subjects/:id - valid partial updates (CA02)', () => {
     const result = await handleUpdateSubject(event, { id: 'subject-1' }, { description: 'Updated note' })
 
     expect(result.subject.description).toBe('Updated note')
-    expect(mockedUpdateSubject).toHaveBeenCalledWith('user-a', 'subject-1', { description: 'Updated note' })
+    expect(mockedUpdateSubject).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'subject-1', { description: 'Updated note' })
   })
 
   it('updates both fields', async () => {
@@ -71,7 +71,7 @@ describe('PATCH /api/subjects/:id - valid partial updates (CA02)', () => {
     const event = createTestEvent('user-a')
     await handleUpdateSubject(event, { id: 'subject-1' }, { name: 'Calculus I', description: 'Updated note' })
 
-    expect(mockedUpdateSubject).toHaveBeenCalledWith('user-a', 'subject-1', {
+    expect(mockedUpdateSubject).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'subject-1', {
       name: 'Calculus I',
       description: 'Updated note'
     })

@@ -28,6 +28,10 @@ export default defineEventHandler(async (event) => {
   } = await supabase.auth.getUser()
 
   event.context.auth = resolveAuthContext(user)
+  // Reused by server/utils/security/auth.ts's requireRequestSupabaseClient so
+  // repository writes/reads run as the caller's own session (RLS-enforced),
+  // instead of a separately constructed service-role client that bypasses RLS.
+  event.context.supabase = supabase
 
   const path = event.path.split('?')[0]
   const action = resolveRouteGuardAction(path, Boolean(event.context.auth))

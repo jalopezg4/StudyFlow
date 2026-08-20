@@ -1,4 +1,4 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { createSafeHttpError } from '../security/errors'
 import type { CreateSubjectInput, UpdateSubjectInput } from './schemas'
 
@@ -16,27 +16,6 @@ interface SubjectRow {
   created_at: string
 }
 
-let cachedClient: SupabaseClient | null = null
-
-function getServiceRoleClient(): SupabaseClient {
-  if (cachedClient) {
-    return cachedClient
-  }
-
-  const supabaseUrl = process.env.NUXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    throw new Error('Supabase server configuration is missing')
-  }
-
-  cachedClient = createClient(supabaseUrl, serviceRoleKey, {
-    auth: { persistSession: false }
-  })
-
-  return cachedClient
-}
-
 function toSubject(row: SubjectRow): Subject {
   return {
     id: row.id,
@@ -46,9 +25,11 @@ function toSubject(row: SubjectRow): Subject {
   }
 }
 
-export async function createSubject(userId: string, input: CreateSubjectInput): Promise<Subject> {
-  const supabase = getServiceRoleClient()
-
+export async function createSubject(
+  supabase: SupabaseClient,
+  userId: string,
+  input: CreateSubjectInput
+): Promise<Subject> {
   const { data, error } = await supabase
     .from('subjects')
     .insert({
@@ -66,9 +47,10 @@ export async function createSubject(userId: string, input: CreateSubjectInput): 
   return toSubject(data as SubjectRow)
 }
 
-export async function listSubjectsForOwner(userId: string): Promise<Subject[]> {
-  const supabase = getServiceRoleClient()
-
+export async function listSubjectsForOwner(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<Subject[]> {
   const { data, error } = await supabase
     .from('subjects')
     .select('id, name, description, created_at')
@@ -82,9 +64,11 @@ export async function listSubjectsForOwner(userId: string): Promise<Subject[]> {
   return (data as SubjectRow[]).map(toSubject)
 }
 
-export async function getSubjectForOwner(userId: string, id: string): Promise<Subject | null> {
-  const supabase = getServiceRoleClient()
-
+export async function getSubjectForOwner(
+  supabase: SupabaseClient,
+  userId: string,
+  id: string
+): Promise<Subject | null> {
   const { data, error } = await supabase
     .from('subjects')
     .select('id, name, description, created_at')
@@ -100,12 +84,11 @@ export async function getSubjectForOwner(userId: string, id: string): Promise<Su
 }
 
 export async function updateSubject(
+  supabase: SupabaseClient,
   userId: string,
   id: string,
   patch: UpdateSubjectInput
 ): Promise<Subject> {
-  const supabase = getServiceRoleClient()
-
   const updatePayload: Record<string, string> = {}
   if (patch.name !== undefined) {
     updatePayload.name = patch.name
@@ -133,9 +116,11 @@ export async function updateSubject(
   return toSubject(data as SubjectRow)
 }
 
-export async function deleteSubject(userId: string, id: string): Promise<void> {
-  const supabase = getServiceRoleClient()
-
+export async function deleteSubject(
+  supabase: SupabaseClient,
+  userId: string,
+  id: string
+): Promise<void> {
   const { data, error } = await supabase
     .from('subjects')
     .delete()

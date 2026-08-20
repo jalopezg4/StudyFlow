@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { createTestEvent } from '../security/fixtures'
+import { createTestEvent, testSupabaseClient } from '../security/fixtures'
 
 vi.mock('../../server/utils/subjects/repository', () => ({
   getSubjectForOwner: vi.fn()
@@ -35,7 +35,7 @@ describe('GET /api/subjects/:id - retrieve an owned subject (CA03 AC3, positive 
         createdAt: '2026-08-18T00:00:00.000Z'
       }
     })
-    expect(mockedGetSubjectForOwner).toHaveBeenCalledWith('user-a', 'subject-1')
+    expect(mockedGetSubjectForOwner).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'subject-1')
   })
 })
 
