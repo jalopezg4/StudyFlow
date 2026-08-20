@@ -1,27 +1,31 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 
-interface Subject {
+interface StudyTask {
   id: string
-  name: string
+  subjectId: string
+  subjectName: string
+  title: string
   description: string | null
+  dueDate: string | null
+  status: 'pending' | 'completed'
   createdAt: string
-  taskCount: number
 }
 
-const props = defineProps<{ subject: Subject }>()
+const props = defineProps<{ task: StudyTask }>()
 
 const emit = defineEmits<{
-  updated: [subject: Subject]
+  updated: [task: StudyTask]
   cancel: []
 }>()
 
-const NAME_MAX_LENGTH = 100
+const TITLE_MAX_LENGTH = 100
 const DESCRIPTION_MAX_LENGTH = 500
 
 const form = reactive({
-  name: props.subject.name,
-  description: props.subject.description ?? ''
+  title: props.task.title,
+  description: props.task.description ?? '',
+  dueDate: props.task.dueDate ?? ''
 })
 
 type Status = 'idle' | 'loading' | 'error'
@@ -30,14 +34,14 @@ const status = ref<Status>('idle')
 const errorMessage = ref('')
 
 function validate(): string | null {
-  const trimmedName = form.name.trim()
+  const trimmedTitle = form.title.trim()
 
-  if (trimmedName.length === 0) {
-    return 'Name is required.'
+  if (trimmedTitle.length === 0) {
+    return 'Title is required.'
   }
 
-  if (trimmedName.length > NAME_MAX_LENGTH) {
-    return `Name cannot exceed ${NAME_MAX_LENGTH} characters.`
+  if (trimmedTitle.length > TITLE_MAX_LENGTH) {
+    return `Title cannot exceed ${TITLE_MAX_LENGTH} characters.`
   }
 
   if (form.description.trim().length > DESCRIPTION_MAX_LENGTH) {
@@ -49,7 +53,7 @@ function validate(): string | null {
 
 function extractErrorMessage(error: unknown): string {
   const fetchError = error as { data?: { error?: { message?: string } } }
-  return fetchError.data?.error?.message ?? 'Could not update the subject. Please try again.'
+  return fetchError.data?.error?.message ?? 'Could not update the task. Please try again.'
 }
 
 async function handleSubmit() {
@@ -65,16 +69,17 @@ async function handleSubmit() {
   errorMessage.value = ''
 
   try {
-    const response = await $fetch<{ status: string, subject: Subject }>(`/api/subjects/${props.subject.id}`, {
+    const response = await $fetch<{ status: string, task: StudyTask }>(`/api/tasks/${props.task.id}`, {
       method: 'PATCH',
       body: {
-        name: form.name.trim(),
-        description: form.description.trim() || undefined
+        title: form.title.trim(),
+        description: form.description.trim() || undefined,
+        dueDate: form.dueDate || undefined
       }
     })
 
     status.value = 'idle'
-    emit('updated', response.subject)
+    emit('updated', response.task)
   } catch (error) {
     status.value = 'error'
     errorMessage.value = extractErrorMessage(error)
@@ -85,12 +90,12 @@ async function handleSubmit() {
 <template>
   <form novalidate class="flex flex-col gap-3" @submit.prevent="handleSubmit">
     <div class="flex flex-col gap-1">
-      <label :for="`subject-edit-name-${subject.id}`" class="text-sm font-medium text-slate-700">Name</label>
+      <label :for="`task-edit-title-${task.id}`" class="text-sm font-medium text-slate-700">Title</label>
       <input
-        :id="`subject-edit-name-${subject.id}`"
-        v-model="form.name"
+        :id="`task-edit-title-${task.id}`"
+        v-model="form.title"
         type="text"
-        :maxlength="NAME_MAX_LENGTH"
+        :maxlength="TITLE_MAX_LENGTH"
         :disabled="status === 'loading'"
         required
         class="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
@@ -98,14 +103,25 @@ async function handleSubmit() {
     </div>
 
     <div class="flex flex-col gap-1">
-      <label :for="`subject-edit-description-${subject.id}`" class="text-sm font-medium text-slate-700">Description (optional)</label>
+      <label :for="`task-edit-description-${task.id}`" class="text-sm font-medium text-slate-700">Description (optional)</label>
       <textarea
-        :id="`subject-edit-description-${subject.id}`"
+        :id="`task-edit-description-${task.id}`"
         v-model="form.description"
         :maxlength="DESCRIPTION_MAX_LENGTH"
         :disabled="status === 'loading'"
         class="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
       />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label :for="`task-edit-due-date-${task.id}`" class="text-sm font-medium text-slate-700">Due date (optional)</label>
+      <input
+        :id="`task-edit-due-date-${task.id}`"
+        v-model="form.dueDate"
+        type="date"
+        :disabled="status === 'loading'"
+        class="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
+      >
     </div>
 
     <div class="flex gap-2">

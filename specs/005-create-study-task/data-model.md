@@ -1,5 +1,7 @@
 # Data Model: Create Study Task
 
+> **Amended by HU06 (2026-08-20)**: this document originally specified `subject_id` with **no** `on delete cascade` (deletion blocked while tasks exist, matching HU04's original rule). That was reversed — see `specs/006-manage-study-tasks/data-model.md` for the current, effective schema (`on delete cascade`) and `supabase/migrations/20260820020000_study_tasks_subject_cascade_delete.sql`.
+
 ## Overview
 
 HU05 introduces the `study_tasks` table, owned per-student and scoped to a subject the same student owns, protected by the RLS conventions defined in TECH-03 (`docs/security/rls-strategy.md`). Only the operations needed for this HU (create, and read for the owner) are modeled; update/delete policies are deferred to HU06 (Manage Study Tasks).

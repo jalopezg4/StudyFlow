@@ -1,20 +1,38 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { createTestEvent } from '../security/fixtures'
+import { createTestEvent, testSupabaseClient } from '../security/fixtures'
 
 vi.mock('../../server/utils/tasks/repository', () => ({
-  createStudyTask: vi.fn()
+  createStudyTask: vi.fn(),
+  getStudyTaskForOwner: vi.fn(),
+  updateStudyTask: vi.fn(),
+  deleteStudyTask: vi.fn()
 }))
 
 vi.mock('../../server/utils/subjects/repository', () => ({
   getSubjectForOwner: vi.fn()
 }))
 
-const { createStudyTask } = await import('../../server/utils/tasks/repository')
+const { createStudyTask, getStudyTaskForOwner, updateStudyTask, deleteStudyTask } =
+  await import('../../server/utils/tasks/repository')
 const { getSubjectForOwner } = await import('../../server/utils/subjects/repository')
 const { handleCreateStudyTask } = await import('../../server/api/tasks/index.post')
+const { handleGetStudyTask } = await import('../../server/api/tasks/[id].get')
+const { handleUpdateStudyTask } = await import('../../server/api/tasks/[id].patch')
+const { handleDeleteStudyTask } = await import('../../server/api/tasks/[id].delete')
 
 const mockedCreateStudyTask = vi.mocked(createStudyTask)
+const mockedGetStudyTaskForOwner = vi.mocked(getStudyTaskForOwner)
+const mockedUpdateStudyTask = vi.mocked(updateStudyTask)
+const mockedDeleteStudyTask = vi.mocked(deleteStudyTask)
 const mockedGetSubjectForOwner = vi.mocked(getSubjectForOwner)
+
+function notFoundError() {
+  return Object.assign(new Error('Study task not found'), {
+    statusCode: 404,
+    statusMessage: 'Study task not found',
+    data: { code: 'NOT_FOUND', message: 'Study task not found' }
+  })
+}
 
 describe('POST /api/tasks - unauthenticated rejection', () => {
   beforeEach(() => {
@@ -124,7 +142,7 @@ describe('POST /api/tasks - ownership and status cannot be spoofed (FR-007, FR-0
     })
 
     expect(mockedCreateStudyTask).toHaveBeenCalledTimes(1)
-    expect(mockedCreateStudyTask).toHaveBeenCalledWith('user-a', {
+    expect(mockedCreateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-a', {
       subjectId: '11111111-1111-1111-1111-111111111111',
       title: 'Read chapter 3'
     })
@@ -141,7 +159,7 @@ describe('POST /api/tasks - per-request isolation across principals', () => {
       description: null,
       createdAt: '2026-08-18T00:00:00.000Z'
     }))
-    mockedCreateStudyTask.mockImplementation(async (userId, input) => ({
+    mockedCreateStudyTask.mockImplementation(async (_supabase, userId, input) => ({
       id: `task-${userId}`,
       subjectId: input.subjectId,
       title: input.title,
@@ -163,7 +181,132 @@ describe('POST /api/tasks - per-request isolation across principals', () => {
 
     expect(resultA.task.id).toBe('task-user-a')
     expect(resultB.task.id).toBe('task-user-b')
-    expect(mockedCreateStudyTask).toHaveBeenCalledWith('user-a', { subjectId: 'aaaaaaaa-0000-0000-0000-000000000000', title: 'Task A' })
-    expect(mockedCreateStudyTask).toHaveBeenCalledWith('user-b', { subjectId: 'bbbbbbbb-0000-0000-0000-000000000000', title: 'Task B' })
+    expect(mockedCreateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-a', { subjectId: 'aaaaaaaa-0000-0000-0000-000000000000', title: 'Task A' })
+    expect(mockedCreateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-b', { subjectId: 'bbbbbbbb-0000-0000-0000-000000000000', title: 'Task B' })
+  })
+})
+
+describe('GET /api/tasks/:id - cross-owner denial (US3 AC1)', () => {
+  beforeEach(() => {
+    mockedGetStudyTaskForOwner.mockReset()
+    // Simulates the real owner-scoped query: only Student A's own id returns a row.
+    mockedGetStudyTaskForOwner.mockImplementation(async (_supabase, userId, id) =>
+      userId === 'user-a' && id === 'aaaaaaaa-1111-1111-1111-111111111111'
+        ? {
+            id: 'aaaaaaaa-1111-1111-1111-111111111111',
+            subjectId: 'subject-a1',
+            title: 'Read chapter 3',
+            description: null,
+            dueDate: null,
+            status: 'pending',
+            createdAt: '2026-08-19T00:00:00.000Z'
+          }
+        : null
+    )
+  })
+
+  it("denies Student B viewing Student A's task directly, without revealing it exists", async () => {
+    const event = createTestEvent('user-b')
+
+    await expect(handleGetStudyTask(event, { id: 'aaaaaaaa-1111-1111-1111-111111111111' })).rejects.toMatchObject({
+      statusCode: 404,
+      data: { code: 'NOT_FOUND' }
+    })
+  })
+
+  it('still allows Student A to view their own task, unaffected by the denial above', async () => {
+    const event = createTestEvent('user-a')
+
+    await expect(handleGetStudyTask(event, { id: 'aaaaaaaa-1111-1111-1111-111111111111' })).resolves.toMatchObject({
+      status: 'ok',
+      task: { id: 'aaaaaaaa-1111-1111-1111-111111111111' }
+    })
+  })
+})
+
+describe('PATCH /api/tasks/:id - cross-owner denial (US3 AC2)', () => {
+  beforeEach(() => {
+    mockedUpdateStudyTask.mockReset()
+    mockedUpdateStudyTask.mockRejectedValue(notFoundError())
+  })
+
+  it("denies Student B editing Student A's task and changes nothing", async () => {
+    const event = createTestEvent('user-b')
+
+    await expect(
+      handleUpdateStudyTask(event, { id: 'aaaaaaaa-1111-1111-1111-111111111111' }, { title: 'Hijacked title' })
+    ).rejects.toMatchObject({
+      statusCode: 404,
+      data: { code: 'NOT_FOUND' }
+    })
+    expect(mockedUpdateStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-b', 'aaaaaaaa-1111-1111-1111-111111111111', { title: 'Hijacked title' })
+  })
+
+  it("denies Student B marking Student A's task as completed", async () => {
+    const event = createTestEvent('user-b')
+
+    await expect(
+      handleUpdateStudyTask(event, { id: 'aaaaaaaa-1111-1111-1111-111111111111' }, { status: 'completed' })
+    ).rejects.toMatchObject({
+      statusCode: 404,
+      data: { code: 'NOT_FOUND' }
+    })
+  })
+})
+
+describe('DELETE /api/tasks/:id - cross-owner denial (US3 AC3)', () => {
+  beforeEach(() => {
+    mockedDeleteStudyTask.mockReset()
+    mockedDeleteStudyTask.mockRejectedValue(notFoundError())
+  })
+
+  it("denies Student B deleting Student A's task and it remains present", async () => {
+    const event = createTestEvent('user-b')
+
+    await expect(handleDeleteStudyTask(event, { id: 'aaaaaaaa-1111-1111-1111-111111111111' })).rejects.toMatchObject({
+      statusCode: 404,
+      data: { code: 'NOT_FOUND' }
+    })
+    expect(mockedDeleteStudyTask).toHaveBeenCalledWith(testSupabaseClient, 'user-b', 'aaaaaaaa-1111-1111-1111-111111111111')
+  })
+})
+
+describe('Nonexistent task id is indistinguishable from a non-owned one (US3 AC4)', () => {
+  beforeEach(() => {
+    mockedGetStudyTaskForOwner.mockReset()
+    mockedUpdateStudyTask.mockReset()
+    mockedDeleteStudyTask.mockReset()
+    mockedGetStudyTaskForOwner.mockResolvedValue(null)
+    mockedUpdateStudyTask.mockRejectedValue(notFoundError())
+    mockedDeleteStudyTask.mockRejectedValue(notFoundError())
+  })
+
+  it('returns the same 404 NOT_FOUND shape for GET on an id that never existed', async () => {
+    const event = createTestEvent('user-a')
+
+    await expect(handleGetStudyTask(event, { id: '00000000-0000-0000-0000-000000000000' })).rejects.toMatchObject({
+      statusCode: 404,
+      data: { code: 'NOT_FOUND' }
+    })
+  })
+
+  it('returns the same 404 NOT_FOUND shape for PATCH on an id that never existed', async () => {
+    const event = createTestEvent('user-a')
+
+    await expect(
+      handleUpdateStudyTask(event, { id: '00000000-0000-0000-0000-000000000000' }, { title: 'Does not matter' })
+    ).rejects.toMatchObject({
+      statusCode: 404,
+      data: { code: 'NOT_FOUND' }
+    })
+  })
+
+  it('returns the same 404 NOT_FOUND shape for DELETE on an id that never existed', async () => {
+    const event = createTestEvent('user-a')
+
+    await expect(handleDeleteStudyTask(event, { id: '00000000-0000-0000-0000-000000000000' })).rejects.toMatchObject({
+      statusCode: 404,
+      data: { code: 'NOT_FOUND' }
+    })
   })
 })

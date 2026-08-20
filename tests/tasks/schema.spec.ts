@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CreateStudyTaskSchema } from '../../server/utils/tasks/schemas'
+import { CreateStudyTaskSchema, UpdateStudyTaskSchema } from '../../server/utils/tasks/schemas'
 
 describe('CreateStudyTaskSchema', () => {
   it('accepts a valid subjectId and title with no other fields', () => {
@@ -179,5 +179,157 @@ describe('CreateStudyTaskSchema', () => {
       expect(result.data).not.toHaveProperty('userId')
       expect(result.data).not.toHaveProperty('status')
     }
+  })
+})
+
+describe('UpdateStudyTaskSchema', () => {
+  it('accepts a title-only update', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ title: 'Read chapters 3-4' })
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data).toEqual({ title: 'Read chapters 3-4' })
+    }
+  })
+
+  it('accepts a description-only update', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ description: 'Updated note' })
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.description).toBe('Updated note')
+      expect(result.data.title).toBeUndefined()
+    }
+  })
+
+  it('accepts a dueDate-only update', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ dueDate: '2026-09-05' })
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.dueDate).toBe('2026-09-05')
+    }
+  })
+
+  it('accepts a status-only update to completed', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ status: 'completed' })
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.status).toBe('completed')
+    }
+  })
+
+  it('accepts a status-only update back to pending', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ status: 'pending' })
+
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts an update with all four fields present', () => {
+    const result = UpdateStudyTaskSchema.safeParse({
+      title: 'Read chapters 3-4',
+      description: 'Updated note',
+      dueDate: '2026-09-05',
+      status: 'completed'
+    })
+
+    expect(result.success).toBe(true)
+  })
+
+  it('rejects an update with none of the four fields present', () => {
+    const result = UpdateStudyTaskSchema.safeParse({})
+
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects an empty title', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ title: '' })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects a whitespace-only title', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ title: '   ' })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects a title over the 100 character limit', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ title: 'a'.repeat(101) })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects a description over the 500 character limit', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ description: 'a'.repeat(501) })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects an invalid status value', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ status: 'archived' })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects a due date in an ambiguous non-ISO format', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ dueDate: '09/05/2026' })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('trims the title before validating length', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ title: '  Read chapters 3-4  ' })
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.title).toBe('Read chapters 3-4')
+    }
+  })
+
+  it('rejects a calendar-invalid date that Date.parse would otherwise roll over (e.g. Feb 31)', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ dueDate: '2026-02-31' })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('clears an existing description when an empty string is explicitly sent', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ description: '' })
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.description).toBeNull()
+    }
+  })
+
+  it('clears an existing due date when an empty string is explicitly sent', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ dueDate: '' })
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.dueDate).toBeNull()
+    }
+  })
+
+  it('leaves description untouched (undefined) when the key is omitted entirely', () => {
+    const result = UpdateStudyTaskSchema.safeParse({ title: 'Read chapters 3-4' })
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.description).toBeUndefined()
+    }
+  })
+})
+
+describe('CreateStudyTaskSchema calendar-date validation', () => {
+  it('rejects a calendar-invalid date that Date.parse would otherwise roll over (e.g. Feb 31)', () => {
+    const result = CreateStudyTaskSchema.safeParse({
+      subjectId: '11111111-1111-1111-1111-111111111111',
+      title: 'Read chapter 3',
+      dueDate: '2026-02-31'
+    })
+
+    expect(result.success).toBe(false)
   })
 })

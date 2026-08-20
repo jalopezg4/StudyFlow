@@ -1,5 +1,13 @@
 <script setup lang="ts">
+import { useTemplateRef } from 'vue'
 import TaskForm from '~/components/tasks/TaskForm.vue'
+import TaskList from '~/components/tasks/TaskList.vue'
+
+const taskList = useTemplateRef('taskList')
+
+function handleCreated() {
+  taskList.value?.refresh()
+}
 </script>
 
 <template>
@@ -19,9 +27,13 @@ import TaskForm from '~/components/tasks/TaskForm.vue'
         </p>
 
         <div class="mt-6">
-          <TaskForm />
+          <TaskForm @created="handleCreated" />
         </div>
       </div>
+
+      <section class="mt-6 rounded-lg bg-white p-8 shadow">
+        <TaskList ref="taskList" />
+      </section>
     </div>
   </div>
 </template>
