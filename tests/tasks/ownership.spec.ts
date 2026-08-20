@@ -26,7 +26,7 @@ describe('POST /api/tasks - unauthenticated rejection', () => {
     const event = createTestEvent()
 
     await expect(
-      handleCreateStudyTask(event, { subjectId: 'subject-1', title: 'Read chapter 3' })
+      handleCreateStudyTask(event, { subjectId: '11111111-1111-1111-1111-111111111111', title: 'Read chapter 3' })
     ).rejects.toMatchObject({
       statusCode: 401,
       data: { code: 'UNAUTHENTICATED' }
@@ -42,8 +42,8 @@ describe('POST /api/tasks - cross-owner subject denial (US2)', () => {
     mockedGetSubjectForOwner.mockReset()
     // Simulates the real owner-scoped query: only Student A's own subject id returns a row.
     mockedGetSubjectForOwner.mockImplementation(async (userId, id) =>
-      userId === 'user-a' && id === 'subject-a1'
-        ? { id: 'subject-a1', name: 'Calculus I', description: null, createdAt: '2026-08-18T00:00:00.000Z' }
+      userId === 'user-a' && id === 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+        ? { id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', name: 'Calculus I', description: null, createdAt: '2026-08-18T00:00:00.000Z' }
         : null
     )
   })
@@ -52,7 +52,7 @@ describe('POST /api/tasks - cross-owner subject denial (US2)', () => {
     const event = createTestEvent('user-b')
 
     await expect(
-      handleCreateStudyTask(event, { subjectId: 'subject-a1', title: 'Hijacked task' })
+      handleCreateStudyTask(event, { subjectId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', title: 'Hijacked task' })
     ).rejects.toMatchObject({
       statusCode: 404,
       data: { code: 'NOT_FOUND' }
@@ -64,7 +64,7 @@ describe('POST /api/tasks - cross-owner subject denial (US2)', () => {
     const event = createTestEvent('user-a')
 
     await expect(
-      handleCreateStudyTask(event, { subjectId: 'never-existed', title: 'Some task' })
+      handleCreateStudyTask(event, { subjectId: '99999999-9999-9999-9999-999999999999', title: 'Some task' })
     ).rejects.toMatchObject({
       statusCode: 404,
       data: { code: 'NOT_FOUND' }
@@ -75,7 +75,7 @@ describe('POST /api/tasks - cross-owner subject denial (US2)', () => {
   it('still allows Student A to create a task under their own subject, unaffected by the denials above', async () => {
     mockedCreateStudyTask.mockResolvedValue({
       id: 'task-1',
-      subjectId: 'subject-a1',
+      subjectId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
       title: 'Own task',
       description: null,
       dueDate: null,
@@ -86,7 +86,7 @@ describe('POST /api/tasks - cross-owner subject denial (US2)', () => {
     const event = createTestEvent('user-a')
 
     await expect(
-      handleCreateStudyTask(event, { subjectId: 'subject-a1', title: 'Own task' })
+      handleCreateStudyTask(event, { subjectId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', title: 'Own task' })
     ).resolves.toMatchObject({ status: 'created' })
   })
 })
@@ -96,14 +96,14 @@ describe('POST /api/tasks - ownership and status cannot be spoofed (FR-007, FR-0
     mockedCreateStudyTask.mockReset()
     mockedGetSubjectForOwner.mockReset()
     mockedGetSubjectForOwner.mockResolvedValue({
-      id: 'subject-1',
+      id: '11111111-1111-1111-1111-111111111111',
       name: 'Calculus I',
       description: null,
       createdAt: '2026-08-18T00:00:00.000Z'
     })
     mockedCreateStudyTask.mockResolvedValue({
       id: 'task-1',
-      subjectId: 'subject-1',
+      subjectId: '11111111-1111-1111-1111-111111111111',
       title: 'Read chapter 3',
       description: null,
       dueDate: null,
@@ -116,7 +116,7 @@ describe('POST /api/tasks - ownership and status cannot be spoofed (FR-007, FR-0
     const event = createTestEvent('user-a')
 
     await handleCreateStudyTask(event, {
-      subjectId: 'subject-1',
+      subjectId: '11111111-1111-1111-1111-111111111111',
       title: 'Read chapter 3',
       userId: 'user-b',
       ownerId: 'user-b',
@@ -125,7 +125,7 @@ describe('POST /api/tasks - ownership and status cannot be spoofed (FR-007, FR-0
 
     expect(mockedCreateStudyTask).toHaveBeenCalledTimes(1)
     expect(mockedCreateStudyTask).toHaveBeenCalledWith('user-a', {
-      subjectId: 'subject-1',
+      subjectId: '11111111-1111-1111-1111-111111111111',
       title: 'Read chapter 3'
     })
   })
@@ -157,13 +157,13 @@ describe('POST /api/tasks - per-request isolation across principals', () => {
     const eventB = createTestEvent('user-b')
 
     const [resultA, resultB] = await Promise.all([
-      handleCreateStudyTask(eventA, { subjectId: 'subject-a', title: 'Task A' }),
-      handleCreateStudyTask(eventB, { subjectId: 'subject-b', title: 'Task B' })
+      handleCreateStudyTask(eventA, { subjectId: 'aaaaaaaa-0000-0000-0000-000000000000', title: 'Task A' }),
+      handleCreateStudyTask(eventB, { subjectId: 'bbbbbbbb-0000-0000-0000-000000000000', title: 'Task B' })
     ])
 
     expect(resultA.task.id).toBe('task-user-a')
     expect(resultB.task.id).toBe('task-user-b')
-    expect(mockedCreateStudyTask).toHaveBeenCalledWith('user-a', { subjectId: 'subject-a', title: 'Task A' })
-    expect(mockedCreateStudyTask).toHaveBeenCalledWith('user-b', { subjectId: 'subject-b', title: 'Task B' })
+    expect(mockedCreateStudyTask).toHaveBeenCalledWith('user-a', { subjectId: 'aaaaaaaa-0000-0000-0000-000000000000', title: 'Task A' })
+    expect(mockedCreateStudyTask).toHaveBeenCalledWith('user-b', { subjectId: 'bbbbbbbb-0000-0000-0000-000000000000', title: 'Task B' })
   })
 })

@@ -17,7 +17,7 @@ const mockedCreateStudyTask = vi.mocked(createStudyTask)
 const mockedGetSubjectForOwner = vi.mocked(getSubjectForOwner)
 
 const ownedSubject = {
-  id: 'subject-1',
+  id: '11111111-1111-1111-1111-111111111111',
   name: 'Calculus I',
   description: null,
   createdAt: '2026-08-18T00:00:00.000Z'
@@ -40,7 +40,7 @@ describe('POST /api/tasks - valid creation (US1)', () => {
   it('creates a task with a title only', async () => {
     mockedCreateStudyTask.mockResolvedValue({
       id: 'task-1',
-      subjectId: 'subject-1',
+      subjectId: '11111111-1111-1111-1111-111111111111',
       title: 'Read chapter 3',
       description: null,
       dueDate: null,
@@ -50,13 +50,13 @@ describe('POST /api/tasks - valid creation (US1)', () => {
 
     const event = createTestEvent('user-a')
 
-    const result = await handleCreateStudyTask(event, { subjectId: 'subject-1', title: 'Read chapter 3' })
+    const result = await handleCreateStudyTask(event, { subjectId: '11111111-1111-1111-1111-111111111111', title: 'Read chapter 3' })
 
     expect(result).toEqual({
       status: 'created',
       task: {
         id: 'task-1',
-        subjectId: 'subject-1',
+        subjectId: '11111111-1111-1111-1111-111111111111',
         title: 'Read chapter 3',
         description: null,
         dueDate: null,
@@ -64,14 +64,14 @@ describe('POST /api/tasks - valid creation (US1)', () => {
         createdAt: '2026-08-19T00:00:00.000Z'
       }
     })
-    expect(mockedGetSubjectForOwner).toHaveBeenCalledWith('user-a', 'subject-1')
-    expect(mockedCreateStudyTask).toHaveBeenCalledWith('user-a', { subjectId: 'subject-1', title: 'Read chapter 3' })
+    expect(mockedGetSubjectForOwner).toHaveBeenCalledWith('user-a', '11111111-1111-1111-1111-111111111111')
+    expect(mockedCreateStudyTask).toHaveBeenCalledWith('user-a', { subjectId: '11111111-1111-1111-1111-111111111111', title: 'Read chapter 3' })
   })
 
   it('creates a task with a title, description, and due date', async () => {
     mockedCreateStudyTask.mockResolvedValue({
       id: 'task-2',
-      subjectId: 'subject-1',
+      subjectId: '11111111-1111-1111-1111-111111111111',
       title: 'Read chapter 3',
       description: 'Focus on section 3.2',
       dueDate: '2026-09-01',
@@ -82,7 +82,7 @@ describe('POST /api/tasks - valid creation (US1)', () => {
     const event = createTestEvent('user-a')
 
     const result = await handleCreateStudyTask(event, {
-      subjectId: 'subject-1',
+      subjectId: '11111111-1111-1111-1111-111111111111',
       title: 'Read chapter 3',
       description: 'Focus on section 3.2',
       dueDate: '2026-09-01'
@@ -96,7 +96,7 @@ describe('POST /api/tasks - valid creation (US1)', () => {
   it('succeeds without description or due date', async () => {
     mockedCreateStudyTask.mockResolvedValue({
       id: 'task-3',
-      subjectId: 'subject-1',
+      subjectId: '11111111-1111-1111-1111-111111111111',
       title: 'Read chapter 3',
       description: null,
       dueDate: null,
@@ -107,7 +107,7 @@ describe('POST /api/tasks - valid creation (US1)', () => {
     const event = createTestEvent('user-a')
 
     await expect(
-      handleCreateStudyTask(event, { subjectId: 'subject-1', title: 'Read chapter 3' })
+      handleCreateStudyTask(event, { subjectId: '11111111-1111-1111-1111-111111111111', title: 'Read chapter 3' })
     ).resolves.toMatchObject({ status: 'created' })
   })
 })
@@ -123,7 +123,7 @@ describe('POST /api/tasks - invalid input rejection (US3)', () => {
     const event = createTestEvent('user-a')
 
     await expectSecurityError(
-      handleCreateStudyTask(event, { subjectId: 'subject-1', title: '' }),
+      handleCreateStudyTask(event, { subjectId: '11111111-1111-1111-1111-111111111111', title: '' }),
       422,
       'VALIDATION_ERROR'
     )
@@ -145,7 +145,7 @@ describe('POST /api/tasks - invalid input rejection (US3)', () => {
     const event = createTestEvent('user-a')
 
     await expectSecurityError(
-      handleCreateStudyTask(event, { subjectId: 'subject-1', title: 'a'.repeat(101) }),
+      handleCreateStudyTask(event, { subjectId: '11111111-1111-1111-1111-111111111111', title: 'a'.repeat(101) }),
       422,
       'VALIDATION_ERROR'
     )
@@ -157,7 +157,7 @@ describe('POST /api/tasks - invalid input rejection (US3)', () => {
 
     await expectSecurityError(
       handleCreateStudyTask(event, {
-        subjectId: 'subject-1',
+        subjectId: '11111111-1111-1111-1111-111111111111',
         title: 'Read chapter 3',
         description: 'a'.repeat(501)
       }),
@@ -172,7 +172,7 @@ describe('POST /api/tasks - invalid input rejection (US3)', () => {
 
     await expectSecurityError(
       handleCreateStudyTask(event, {
-        subjectId: 'subject-1',
+        subjectId: '11111111-1111-1111-1111-111111111111',
         title: 'Read chapter 3',
         dueDate: 'not-a-date'
       }),
