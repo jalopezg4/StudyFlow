@@ -41,7 +41,7 @@ describe('POST /api/tasks - cross-owner subject denial (US2)', () => {
     mockedCreateStudyTask.mockReset()
     mockedGetSubjectForOwner.mockReset()
     // Simulates the real owner-scoped query: only Student A's own subject id returns a row.
-    mockedGetSubjectForOwner.mockImplementation(async (userId, id) =>
+    mockedGetSubjectForOwner.mockImplementation(async (_supabase, userId, id) =>
       userId === 'user-a' && id === 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
         ? { id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', name: 'Calculus I', description: null, createdAt: '2026-08-18T00:00:00.000Z' }
         : null
@@ -135,7 +135,7 @@ describe('POST /api/tasks - per-request isolation across principals', () => {
   beforeEach(() => {
     mockedCreateStudyTask.mockReset()
     mockedGetSubjectForOwner.mockReset()
-    mockedGetSubjectForOwner.mockImplementation(async (userId, id) => ({
+    mockedGetSubjectForOwner.mockImplementation(async (_supabase, userId, id) => ({
       id,
       name: 'Subject',
       description: null,
