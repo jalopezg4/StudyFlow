@@ -21,7 +21,10 @@ interface StudyTaskRow {
   due_date: string | null
   status: 'pending' | 'completed'
   created_at: string
-  subjects: { name: string }[] | null
+  // PostgREST returns a to-one embed (via the subject_id FK column on this
+  // table) as a single object, not an array — unlike the reverse, to-many
+  // `study_tasks(count)` embed used on the subjects side.
+  subjects: { name: string } | null
 }
 
 // Embeds the owning subject's name via the subject_id foreign key so the
@@ -34,7 +37,7 @@ function toStudyTask(row: StudyTaskRow): StudyTask {
   return {
     id: row.id,
     subjectId: row.subject_id,
-    subjectName: row.subjects?.[0]?.name ?? '',
+    subjectName: row.subjects?.name ?? '',
     title: row.title,
     description: row.description,
     dueDate: row.due_date,
@@ -64,7 +67,7 @@ export async function createStudyTask(
     throw new Error(error?.message ?? 'Failed to create study task')
   }
 
-  return toStudyTask(data as StudyTaskRow)
+  return toStudyTask(data as unknown as StudyTaskRow)
 }
 
 export async function listStudyTasksForOwner(
@@ -81,7 +84,7 @@ export async function listStudyTasksForOwner(
     throw new Error(error.message)
   }
 
-  return (data as StudyTaskRow[]).map(toStudyTask)
+  return (data as unknown as StudyTaskRow[]).map(toStudyTask)
 }
 
 export async function getStudyTaskForOwner(
@@ -100,7 +103,7 @@ export async function getStudyTaskForOwner(
     throw new Error(error.message)
   }
 
-  return data ? toStudyTask(data as StudyTaskRow) : null
+  return data ? toStudyTask(data as unknown as StudyTaskRow) : null
 }
 
 export async function updateStudyTask(
@@ -139,7 +142,7 @@ export async function updateStudyTask(
     throw createSafeHttpError(404, 'NOT_FOUND', 'Study task not found')
   }
 
-  return toStudyTask(data as StudyTaskRow)
+  return toStudyTask(data as unknown as StudyTaskRow)
 }
 
 export async function deleteStudyTask(
