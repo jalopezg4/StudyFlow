@@ -35,7 +35,7 @@ describe('DELETE /api/subjects/:id - delete an eligible subject (CA04, allowed c
     expect(result).toEqual({ status: 'deleted', id: 'subject-1' })
     expect(mockedDeleteSubject).toHaveBeenCalledWith(testSupabaseClient, 'user-a', 'subject-1')
 
-    const listing = await listSubjectsForOwner('user-a')
+    const listing = await listSubjectsForOwner(testSupabaseClient, 'user-a')
     expect(listing).toEqual([])
   })
 })
