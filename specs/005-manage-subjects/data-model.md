@@ -1,5 +1,7 @@
 # Data Model: Manage Existing Subjects
 
+> **Amended by HU06 (2026-08-20)**: the "Dependency Contract" below (`on delete restrict`, blocking deletion) was reversed — `study_tasks.subject_id` now uses `on delete cascade` (`supabase/migrations/20260820020000_study_tasks_subject_cascade_delete.sql`). See `specs/006-manage-study-tasks/data-model.md` for the current, effective contract.
+
 ## Overview
 
 HU04 does not change the `subjects` table's columns. It extends the row-level security policy set (adding `UPDATE`/`DELETE`) and documents a forward-looking foreign-key contract that a future `study_tasks` feature must honor for the deletion dependency rule (business rule 3 / FR-010, FR-011) to hold.

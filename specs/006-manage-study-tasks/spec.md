@@ -18,6 +18,10 @@ As a student, I want to view, edit (including marking a task complete/pending), 
 - Q: Does the base listing for this feature need to support filtering or sorting by subject, due date, or status? → A: No. This feature delivers the simplest useful listing (all of the student's own tasks). Filtering and sorting are HU07's dedicated scope, layered on top of this listing without changing it.
 - Q: Is there a dependency rule blocking deletion of a task, similar to how HU04 blocks deleting a subject with tasks? → A: No. No entity currently references a study task (HU09's study sessions do not exist yet), so deletion proceeds unconditionally once ownership is confirmed — the same interim reasoning HU04 used for subjects before tasks existed.
 
+### Session 2026-08-20 (amendment, after initial implementation)
+
+- Q: Should deleting a subject with associated study tasks remain blocked (HU04's original rule), or should it cascade to delete those tasks? → A: Cascade, with an explicit warning. This better matches how task-management tools in this niche behave (deleting a project/list removes its items) and avoids students getting stuck unable to delete a subject without first manually deleting every task under it one by one. To protect against accidental data loss, the client MUST show the student how many tasks will be deleted before they confirm (see FR-013), rather than cascading silently. This reverses HU04's FR-010/FR-011 (`specs/005-manage-subjects/spec.md`) and HU05's data-model assumption that the `study_tasks.subject_id` foreign key has no cascade (`specs/005-create-study-task/data-model.md`) — both are amended alongside this change.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - View my own study tasks (Priority: P1)
@@ -113,6 +117,7 @@ As an authenticated student, I want to delete a task I own, so that I can remove
 - **FR-010**: The system MUST derive task ownership for detail-view, update, and delete operations solely from the authenticated session, never from a client-supplied owner or user identifier.
 - **FR-011**: The system MUST allow the owning authenticated student to delete a task they own; no dependency rule blocks this deletion today (see Clarifications).
 - **FR-012**: Upon successful deletion, the system MUST remove the task from persistence such that it no longer appears in the owning student's subsequent listings.
+- **FR-013** *(amendment)*: The system MUST report, for each of a student's own subjects, the count of study tasks currently associated with it, so the client can warn the student how many tasks will be deleted before they confirm deleting that subject. Deleting a subject MUST delete its associated study tasks as well (cascade), and MUST NOT be blocked merely because associated tasks exist.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -127,6 +132,7 @@ As an authenticated student, I want to delete a task I own, so that I can remove
 - **SC-003**: 100% of view, edit, or delete attempts targeting a task the requesting student does not own are denied by the server and result in zero changes to that task's stored data.
 - **SC-004**: A task deleted by its owner no longer appears in that student's listing in the same session, with no manual refresh required.
 - **SC-005**: 100% of update attempts with invalid field values are rejected, with zero changes persisted and a validation error identifying the problem.
+- **SC-006** *(amendment)*: A student attempting to delete a subject that has associated study tasks always sees an accurate count of how many tasks will also be deleted before the deletion is confirmed, and 100% of confirmed subject deletions leave zero orphaned study tasks behind (they are deleted along with the subject).
 
 ## Assumptions
 
@@ -135,3 +141,4 @@ As an authenticated student, I want to delete a task I own, so that I can remove
 - Filtering and sorting the task listing (by subject, due date, status, etc.) are explicitly out of scope for this feature; HU07 (Filter and Sort Study Tasks) delivers that on top of the listing this feature provides.
 - Task recommendation (HU08), study-session tracking (HU09), and dashboard reporting (HU10) are out of scope for this feature.
 - Deletion of a study task is unconditional today because no entity currently references one; if a future feature (e.g., HU09 study sessions) introduces such a reference, that feature is responsible for defining its own dependency rule, the same way HU05 introduced the dependency rule that now applies to subject deletion.
+- *(amendment)* Subject deletion cascading to study tasks (FR-013) reverses HU04's original blocking rule. This was a deliberate product decision, not a bug fix — see the second Clarifications session above. `specs/005-manage-subjects/spec.md` and `specs/005-create-study-task/data-model.md` carry pointer notes to this amendment rather than being silently rewritten, preserving the historical record of what each feature originally shipped.

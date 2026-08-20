@@ -6,6 +6,8 @@
 
 **Status**: Draft
 
+> **Amended by HU06 (2026-08-20)**: FR-010/FR-011 and User Story 4 AC2 below described *blocking* deletion of a subject with associated study tasks. That rule was reversed by `specs/006-manage-study-tasks/spec.md` (FR-013): deletion now cascades to associated tasks, with the client required to show the student a task count before they confirm. The text below is left as originally written to preserve the historical record of what HU04 shipped; the cascade behavior is the current, effective rule.
+
 **Input**: User description: "HU04 - Consultar, editar y eliminar materias
 
 Como estudiante, quiero consultar, editar y eliminar mis materias, para mantener actualizada mi organización académica.

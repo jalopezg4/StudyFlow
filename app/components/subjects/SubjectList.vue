@@ -7,6 +7,7 @@ interface Subject {
   name: string
   description: string | null
   createdAt: string
+  taskCount: number
 }
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
@@ -140,7 +141,10 @@ defineExpose({ refresh: loadSubjects })
           </div>
 
           <div v-if="confirmingDeleteId === subject.id" class="flex flex-col gap-1">
-            <p class="text-sm text-slate-700">Delete this subject? This action cannot be undone.</p>
+            <p v-if="subject.taskCount > 0" class="text-sm font-medium text-red-700">
+              This subject has {{ subject.taskCount }} task{{ subject.taskCount === 1 ? '' : 's' }}. Deleting it will also delete {{ subject.taskCount === 1 ? 'that task' : 'all of them' }}. This action cannot be undone.
+            </p>
+            <p v-else class="text-sm text-slate-700">Delete this subject? This action cannot be undone.</p>
             <div class="flex gap-2">
               <button
                 type="button"

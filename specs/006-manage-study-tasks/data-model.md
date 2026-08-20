@@ -16,7 +16,7 @@ Introduced in HU05 (`specs/005-create-study-task/data-model.md`); no new columns
 |---------------|---------------|-------------------------------------------------------------------------------|
 | `id`          | `uuid`        | Primary key, default `gen_random_uuid()`                                      |
 | `user_id`     | `uuid`        | Not null, references `auth.users(id)` on delete cascade                       |
-| `subject_id`  | `uuid`        | Not null, references `subjects(id)`, no cascade                               |
+| `subject_id`  | `uuid`        | Not null, references `subjects(id)`, **`on delete cascade`** *(amended — see below)* |
 | `title`       | `text`        | Not null, trimmed length between 1 and 100 characters (DB check)              |
 | `description` | `text`        | Nullable, length ≤ 500 characters when present (DB check)                     |
 | `due_date`    | `date`        | Nullable, no additional restriction                                           |
@@ -30,6 +30,15 @@ Introduced in HU05 (`specs/005-create-study-task/data-model.md`); no new columns
 - Update (`PATCH /api/tasks/:id`) MUST apply only when `id` and `user_id` both match; any of `title`/`description`/`due_date`/`status` may be updated independently (FR-004, FR-005, FR-007, FR-008).
 - Delete (`DELETE /api/tasks/:id`) MUST apply under the same scoping rule; no dependency rule blocks it today (FR-011, FR-012).
 - A request targeting an `id` that either does not exist or belongs to a different student MUST produce the same generic not-found outcome for detail view, update, and delete alike (FR-008).
+
+## Amendment: Subject Deletion Cascade (FR-013)
+
+Reverses HU04's original blocking rule (`specs/005-manage-subjects/spec.md` FR-010/FR-011, `specs/005-manage-subjects/data-model.md`'s "Dependency Contract"). Two changes:
+
+1. **`study_tasks.subject_id`'s foreign key** now declares `on delete cascade` instead of the default `restrict` HU05 originally used (`supabase/migrations/20260820020000_study_tasks_subject_cascade_delete.sql`). Deleting a subject now deletes its study tasks at the database level — no application code performs the cascade; Postgres does.
+2. **`Subject` gains a `taskCount` field** (`server/utils/subjects/repository.ts`), computed via a PostgREST embedded count (`study_tasks(count)`) on `subjects`. `GET /api/subjects` and `GET /api/subjects/:id` both return it, so the client can warn the student ("This subject has N tasks. Deleting it will also delete them.") before they confirm a delete — this is the safety mechanism that makes the cascade acceptable from a data-loss standpoint, per the Clarifications session that authorized this amendment.
+
+`deleteSubject`'s prior `23503` (foreign-key-violation) → `409 CONFLICT` translation is removed as dead code: with `on delete cascade`, that violation can no longer occur.
 
 ## Row Level Security
 
@@ -57,6 +66,17 @@ create policy study_tasks_delete_own
   on public.study_tasks
   for delete
   using (auth.uid() = user_id);
+```
+
+`supabase/migrations/20260820020000_study_tasks_subject_cascade_delete.sql` (amendment):
+
+```sql
+alter table public.study_tasks
+  drop constraint study_tasks_subject_id_fkey;
+
+alter table public.study_tasks
+  add constraint study_tasks_subject_id_fkey
+  foreign key (subject_id) references public.subjects (id) on delete cascade;
 ```
 
 ## State Transitions

@@ -63,6 +63,25 @@ describe('GET /api/subjects - only-own-subjects listing (CA01)', () => {
   })
 })
 
+describe('GET /api/subjects - surfaces taskCount for delete-warning UX (HU06 amendment)', () => {
+  beforeEach(() => {
+    mockedListSubjectsForOwner.mockReset()
+  })
+
+  it('passes through the taskCount the repository reports for each subject', async () => {
+    mockedListSubjectsForOwner.mockResolvedValue([
+      { id: 'subject-a1', name: 'Calculus I', description: null, createdAt: '2026-08-18T00:00:00.000Z', taskCount: 3 },
+      { id: 'subject-a2', name: 'History', description: null, createdAt: '2026-08-18T00:00:00.000Z', taskCount: 0 }
+    ])
+
+    const event = createTestEvent('user-a')
+    const result = await handleListSubjects(event)
+
+    expect(result.subjects[0].taskCount).toBe(3)
+    expect(result.subjects[1].taskCount).toBe(0)
+  })
+})
+
 describe('GET /api/subjects - unauthenticated rejection (FR-008)', () => {
   beforeEach(() => {
     mockedListSubjectsForOwner.mockReset()

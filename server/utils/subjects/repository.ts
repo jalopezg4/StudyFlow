@@ -7,6 +7,7 @@ export interface Subject {
   name: string
   description: string | null
   createdAt: string
+  taskCount: number
 }
 
 interface SubjectRow {
@@ -14,14 +15,18 @@ interface SubjectRow {
   name: string
   description: string | null
   created_at: string
+  study_tasks: { count: number }[] | null
 }
+
+const SUBJECT_COLUMNS = 'id, name, description, created_at, study_tasks(count)'
 
 function toSubject(row: SubjectRow): Subject {
   return {
     id: row.id,
     name: row.name,
     description: row.description,
-    createdAt: row.created_at
+    createdAt: row.created_at,
+    taskCount: row.study_tasks?.[0]?.count ?? 0
   }
 }
 
@@ -37,7 +42,7 @@ export async function createSubject(
       name: input.name,
       description: input.description ?? null
     })
-    .select('id, name, description, created_at')
+    .select(SUBJECT_COLUMNS)
     .single()
 
   if (error || !data) {
@@ -53,7 +58,7 @@ export async function listSubjectsForOwner(
 ): Promise<Subject[]> {
   const { data, error } = await supabase
     .from('subjects')
-    .select('id, name, description, created_at')
+    .select(SUBJECT_COLUMNS)
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
 
@@ -71,7 +76,7 @@ export async function getSubjectForOwner(
 ): Promise<Subject | null> {
   const { data, error } = await supabase
     .from('subjects')
-    .select('id, name, description, created_at')
+    .select(SUBJECT_COLUMNS)
     .eq('id', id)
     .eq('user_id', userId)
     .maybeSingle()
@@ -102,7 +107,7 @@ export async function updateSubject(
     .update(updatePayload)
     .eq('id', id)
     .eq('user_id', userId)
-    .select('id, name, description, created_at')
+    .select(SUBJECT_COLUMNS)
     .maybeSingle()
 
   if (error) {
@@ -121,6 +126,11 @@ export async function deleteSubject(
   userId: string,
   id: string
 ): Promise<void> {
+  // Deleting a subject cascades to delete its study tasks at the database
+  // level (see the HU06 cascade-delete migration) — the client is expected
+  // to have already confirmed this with the student (Subject.taskCount is
+  // surfaced for exactly that purpose), so no FK-violation case remains
+  // here to translate into a 409 CONFLICT.
   const { data, error } = await supabase
     .from('subjects')
     .delete()
@@ -129,13 +139,6 @@ export async function deleteSubject(
     .select('id')
 
   if (error) {
-    if (error.code === '23503') {
-      throw createSafeHttpError(
-        409,
-        'CONFLICT',
-        'Subject has associated study tasks and cannot be deleted'
-      )
-    }
     throw new Error(error.message)
   }
 

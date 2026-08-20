@@ -6,6 +6,7 @@ interface Subject {
   name: string
   description: string | null
   createdAt: string
+  taskCount: number
 }
 
 const props = defineProps<{ subject: Subject }>()

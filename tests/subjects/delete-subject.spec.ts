@@ -40,26 +40,22 @@ describe('DELETE /api/subjects/:id - delete an eligible subject (CA04, allowed c
   })
 })
 
-describe('DELETE /api/subjects/:id - blocked by dependency (CA04, blocked case)', () => {
+describe('DELETE /api/subjects/:id - cascades to associated study tasks (HU06 amendment)', () => {
   beforeEach(() => {
     mockedDeleteSubject.mockReset()
   })
 
-  it('translates a foreign-key-violation into 409 CONFLICT without deleting the subject', async () => {
-    mockedDeleteSubject.mockRejectedValue(
-      Object.assign(new Error('blocked'), {
-        statusCode: 409,
-        statusMessage: 'Subject has associated study tasks and cannot be deleted',
-        data: { code: 'CONFLICT', message: 'Subject has associated study tasks and cannot be deleted' }
-      })
-    )
+  it('deletes a subject that has associated study tasks without error (deletion no longer blocked)', async () => {
+    // As of the HU06 amendment, the database FK cascades on delete, so
+    // deleteSubject never sees a foreign-key-violation to translate; the
+    // client is expected to have already warned the student using
+    // Subject.taskCount before confirming.
+    mockedDeleteSubject.mockResolvedValue(undefined)
 
     const event = createTestEvent('user-a')
+    const result = await handleDeleteSubject(event, { id: 'subject-1' })
 
-    await expect(handleDeleteSubject(event, { id: 'subject-1' })).rejects.toMatchObject({
-      statusCode: 409,
-      data: { code: 'CONFLICT' }
-    })
+    expect(result).toEqual({ status: 'deleted', id: 'subject-1' })
   })
 })
 
