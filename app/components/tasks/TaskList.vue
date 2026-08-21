@@ -263,7 +263,8 @@ defineExpose({ refresh: loadTasks })
               <button
                 type="button"
                 :disabled="togglingId === task.id"
-                class="rounded-full px-2.5 py-1 text-xs font-semibold text-emerald-600 transition-colors hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
+                class="rounded-full px-2.5 py-1 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                :class="task.status === 'pending' ? 'text-emerald-600 hover:bg-emerald-50' : 'text-amber-600 hover:bg-amber-50'"
                 @click="toggleStatus(task)"
               >
                 {{ task.status === 'pending' ? 'Mark complete' : 'Mark pending' }}
