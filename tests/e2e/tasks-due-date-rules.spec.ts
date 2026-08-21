@@ -6,8 +6,13 @@ function uniqueEmail(): string {
   return `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`
 }
 
+// UTC, to match the server's clock and the DatePicker's own UTC-based "today".
+function toDateStr(date: Date): string {
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`
+}
+
 test.describe('Study task due date rules', () => {
-  test('rejects a past due date when creating a task, but allows one when editing an existing task', async ({ page }) => {
+  test('the create-task calendar disables past days; the edit-task calendar does not', async ({ page }) => {
     const email = uniqueEmail()
     await page.goto('/register')
     await page.getByLabel('Email').fill(email)
@@ -18,26 +23,36 @@ test.describe('Study task due date rules', () => {
     await page.request.post('/api/subjects', { data: { name: 'Math' } })
     await page.goto('/tasks')
 
-    // Create with a past date: rejected client-side, nothing created.
+    const todayStr = toDateStr(new Date())
+
+    // Open the create-task date picker and go back a month, so every visible day is in the past.
+    await page.locator('#task-due-date').click()
+    await page.getByRole('button', { name: 'Previous month' }).click()
+    const pastDayInCreate = page.locator('[data-date]').first()
+    await expect(pastDayInCreate).toBeDisabled()
+    // Back to the current month and pick today, which must be enabled (min date = today).
+    await page.getByRole('button', { name: 'Next month' }).click()
+    const todayCellInCreate = page.locator(`[data-date="${todayStr}"]`)
+    await expect(todayCellInCreate).toBeEnabled()
+    await todayCellInCreate.click()
+
     await page.locator('#task-subject').selectOption({ label: 'Math' })
     await page.getByLabel('Title').fill('Backdated task')
-    await page.getByLabel('Due date').fill('2020-01-15')
-    await page.getByRole('button', { name: 'Create task' }).click()
-    await expect(page.getByText('Due date cannot be in the past.')).toBeVisible()
-    await expect(page.getByText('Backdated task')).not.toBeVisible()
-
-    // Create with a future date instead: accepted.
-    await page.getByLabel('Due date').fill('2099-01-01')
     await page.getByRole('button', { name: 'Create task' }).click()
     await expect(page.getByText('Task created successfully.')).toBeVisible()
-    await expect(page.locator('li').filter({ hasText: 'Backdated task' })).toBeVisible()
+    await expect(page.locator('li').filter({ hasText: 'Backdated task' })).toContainText(`Due ${todayStr}`)
 
-    // Editing that same task to a past due date is allowed (correcting an
-    // already-created task should never be blocked by this rule).
+    // Editing that same task: the calendar allows going back and picking a past day.
     await page.locator('li').filter({ hasText: 'Backdated task' }).getByRole('button', { name: 'Edit' }).click()
-    const editDueDateInput = page.locator('input[id^="task-edit-due-date-"]')
-    await editDueDateInput.fill('2020-01-15')
+    const editDueDateButton = page.locator('button[id^="task-edit-due-date-"]')
+    await editDueDateButton.click()
+    await page.getByRole('button', { name: 'Previous month' }).click()
+    const pastDayInEdit = page.locator('[data-date]').first()
+    const pastDateStr = await pastDayInEdit.getAttribute('data-date')
+    await expect(pastDayInEdit).toBeEnabled()
+    await pastDayInEdit.click()
     await page.getByRole('button', { name: 'Save' }).click()
-    await expect(page.locator('li').filter({ hasText: 'Backdated task' })).toContainText('Due 2020-01-15')
+
+    await expect(page.locator('li').filter({ hasText: 'Backdated task' })).toContainText(`Due ${pastDateStr}`)
   })
 })
