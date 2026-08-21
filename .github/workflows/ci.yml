@@ -20,6 +20,10 @@ jobs:
     name: Validate
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # `secrets` isn't a valid context inside `if:` - mirror it into `env` first
+    # (env *is* allowed in `if:`) so the Snyk step below can check whether it's set.
+    env:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -47,13 +51,11 @@ jobs:
         run: npm run build
 
       - name: Security scan with Snyk
-        if: ${{ secrets.SNYK_TOKEN != '' }}
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        if: ${{ env.SNYK_TOKEN != '' }}
         run: npx snyk test --severity-threshold=high
 
       - name: Warn if Snyk was skipped
-        if: ${{ secrets.SNYK_TOKEN == '' }}
+        if: ${{ env.SNYK_TOKEN == '' }}
         run: |
           echo "::warning::SNYK_TOKEN secret is not set - security scan was skipped, not passed."
 
