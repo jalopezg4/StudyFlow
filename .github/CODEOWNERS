@@ -1,0 +1,3 @@
+# Any of these owners can satisfy the "Require review from Code Owners"
+# rule on main - a single approval from any one of them is enough.
+* @jalopezg4 @mate2000 @scadavidzea @AIDouglas @Jorgeandd10
