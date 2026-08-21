@@ -153,15 +153,15 @@ defineExpose({ refresh: loadTasks })
 
 <template>
   <div class="flex flex-col gap-3">
-    <h2 class="text-lg font-medium text-slate-900">My tasks</h2>
+    <h2 class="text-lg font-bold tracking-tight text-slate-900">My tasks</h2>
 
-    <div class="flex flex-wrap items-end gap-3 rounded-md border border-slate-200 bg-slate-50 p-3">
+    <div class="flex flex-wrap items-end gap-4 rounded-xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm">
       <div>
         <label for="filter-status" class="block text-xs font-medium text-slate-600">Status</label>
         <select
           id="filter-status"
           v-model="filters.status"
-          class="mt-1 rounded-md border border-slate-300 px-2 py-1 text-sm"
+          class="mt-1 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           @change="loadTasks"
         >
           <option value="">All</option>
@@ -175,7 +175,7 @@ defineExpose({ refresh: loadTasks })
         <select
           id="filter-subject"
           v-model="filters.subjectId"
-          class="mt-1 rounded-md border border-slate-300 px-2 py-1 text-sm"
+          class="mt-1 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           @change="loadTasks"
         >
           <option value="">All</option>
@@ -190,7 +190,7 @@ defineExpose({ refresh: loadTasks })
         <select
           id="filter-sort"
           v-model="filters.sortBy"
-          class="mt-1 rounded-md border border-slate-300 px-2 py-1 text-sm"
+          class="mt-1 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           @change="loadTasks"
         >
           <option value="">Default (newest first)</option>
@@ -205,7 +205,7 @@ defineExpose({ refresh: loadTasks })
         <select
           id="filter-direction"
           v-model="filters.sortDir"
-          class="mt-1 rounded-md border border-slate-300 px-2 py-1 text-sm"
+          class="mt-1 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           @change="loadTasks"
         >
           <option value="asc">Ascending</option>
@@ -232,7 +232,7 @@ defineExpose({ refresh: loadTasks })
       <li
         v-for="task in tasks"
         :key="task.id"
-        class="rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700"
+        class="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition-shadow hover:shadow-md"
       >
         <TaskEditForm
           v-if="editingId === task.id"
@@ -243,7 +243,7 @@ defineExpose({ refresh: loadTasks })
         <div v-else class="flex flex-col gap-2">
           <div class="flex items-start justify-between gap-3">
             <div>
-              <span class="mr-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+              <span class="mr-2 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-600/10">
                 {{ task.subjectName || 'Unknown subject' }}
               </span>
               <strong
@@ -253,8 +253,8 @@ defineExpose({ refresh: loadTasks })
               <span v-if="task.description"> — {{ task.description }}</span>
               <span v-if="task.dueDate" class="ml-2 text-xs text-slate-400">Due {{ task.dueDate }}</span>
               <span
-                class="ml-2 rounded-full px-2 py-0.5 text-xs font-medium"
-                :class="task.status === 'completed' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'"
+                class="ml-2 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset"
+                :class="task.status === 'completed' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' : 'bg-amber-50 text-amber-700 ring-amber-600/20'"
               >
                 {{ task.status === 'completed' ? 'Completed' : 'Pending' }}
               </span>
@@ -263,14 +263,15 @@ defineExpose({ refresh: loadTasks })
               <button
                 type="button"
                 :disabled="togglingId === task.id"
-                class="text-sm font-medium text-slate-600 underline disabled:opacity-60"
+                class="rounded-full px-2.5 py-1 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                :class="task.status === 'pending' ? 'text-emerald-600 hover:bg-emerald-50' : 'text-amber-600 hover:bg-amber-50'"
                 @click="toggleStatus(task)"
               >
                 {{ task.status === 'pending' ? 'Mark complete' : 'Mark pending' }}
               </button>
               <button
                 type="button"
-                class="text-sm font-medium text-slate-600 underline"
+                class="rounded-full px-2.5 py-1 text-xs font-semibold text-indigo-600 transition-colors hover:bg-indigo-50"
                 @click="startEditing(task.id)"
               >
                 Edit
@@ -278,7 +279,7 @@ defineExpose({ refresh: loadTasks })
               <button
                 v-if="confirmingDeleteId !== task.id"
                 type="button"
-                class="text-sm font-medium text-red-700 underline"
+                class="rounded-full px-2.5 py-1 text-xs font-semibold text-red-600 transition-colors hover:bg-red-50"
                 @click="requestDelete(task.id)"
               >
                 Delete
@@ -296,7 +297,7 @@ defineExpose({ refresh: loadTasks })
               <button
                 type="button"
                 :disabled="deletingId === task.id"
-                class="rounded-md bg-red-700 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
+                class="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-red-500 hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 @click="confirmDelete(task.id)"
               >
                 {{ deletingId === task.id ? 'Deleting…' : 'Confirm delete' }}
@@ -304,7 +305,7 @@ defineExpose({ refresh: loadTasks })
               <button
                 type="button"
                 :disabled="deletingId === task.id"
-                class="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 disabled:opacity-60"
+                class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-150 hover:border-slate-400 hover:bg-slate-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 @click="cancelDelete(task.id)"
               >
                 Cancel

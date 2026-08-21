@@ -157,7 +157,7 @@ watch(
       :id="id"
       type="button"
       :disabled="disabled"
-      class="w-full rounded-md border border-slate-300 px-3 py-2 text-left text-sm focus:border-slate-500 focus:outline-none disabled:bg-slate-100"
+      class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-left text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-400"
       :class="modelValue ? 'text-slate-900' : 'text-slate-400'"
       @click="toggleOpen"
     >
@@ -166,13 +166,13 @@ watch(
 
     <div
       v-if="open"
-      class="absolute z-10 mt-1 w-72 rounded-lg border border-slate-200 bg-white p-4 shadow-lg"
+      class="absolute z-10 mt-2 w-72 rounded-xl border border-slate-200 bg-white p-4 shadow-xl ring-1 ring-slate-900/5"
     >
       <div class="mb-3 flex items-center justify-between">
         <button
           type="button"
           aria-label="Previous month"
-          class="rounded-full p-1 text-slate-500 hover:bg-slate-100"
+          class="rounded-full p-1.5 text-slate-500 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
           @click="prevMonth"
         >
           ‹
@@ -181,7 +181,7 @@ watch(
         <button
           type="button"
           aria-label="Next month"
-          class="rounded-full p-1 text-slate-500 hover:bg-slate-100"
+          class="rounded-full p-1.5 text-slate-500 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
           @click="nextMonth"
         >
           ›
@@ -202,14 +202,14 @@ watch(
             :data-date="cell.dateStr"
             :aria-label="cell.dateStr"
             :aria-pressed="cell.dateStr === modelValue"
-            class="flex h-8 w-8 items-center justify-center rounded-full text-sm transition-colors"
+            class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors"
             :class="[
               cell.dateStr === modelValue
-                ? 'bg-slate-900 text-white'
+                ? 'bg-indigo-600 text-white shadow-sm'
                 : cell.disabled
                   ? 'cursor-not-allowed text-slate-300 line-through'
-                  : 'text-slate-700 hover:bg-slate-100',
-              cell.isToday && cell.dateStr !== modelValue ? 'ring-1 ring-slate-400' : ''
+                  : 'text-slate-700 hover:bg-indigo-50 hover:text-indigo-600',
+              cell.isToday && cell.dateStr !== modelValue ? 'ring-1 ring-indigo-400' : ''
             ]"
             @click="selectDate(cell.dateStr)"
           >
@@ -219,10 +219,10 @@ watch(
       </div>
 
       <div class="mt-3 flex justify-between border-t border-slate-100 pt-2">
-        <button type="button" class="text-xs font-medium text-slate-500 underline" @click="clearDate">
+        <button type="button" class="text-xs font-semibold text-slate-500 transition-colors hover:text-indigo-600" @click="clearDate">
           Clear
         </button>
-        <button type="button" class="text-xs font-medium text-slate-500 underline" @click="open = false">
+        <button type="button" class="text-xs font-semibold text-slate-500 transition-colors hover:text-indigo-600" @click="open = false">
           Close
         </button>
       </div>

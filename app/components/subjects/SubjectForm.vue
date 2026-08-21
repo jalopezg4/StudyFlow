@@ -92,7 +92,7 @@ async function handleSubmit() {
         :maxlength="NAME_MAX_LENGTH"
         :disabled="status === 'loading'"
         required
-        class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none disabled:bg-slate-100"
+        class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-400"
       >
       <p class="mt-1 text-xs text-slate-400">{{ form.name.length }}/{{ NAME_MAX_LENGTH }}</p>
     </div>
@@ -108,7 +108,7 @@ async function handleSubmit() {
         placeholder="Brief notes about this subject"
         :maxlength="DESCRIPTION_MAX_LENGTH"
         :disabled="status === 'loading'"
-        class="mt-1 w-full resize-none rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none disabled:bg-slate-100"
+        class="mt-1 w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-400"
       />
       <p class="mt-1 text-xs text-slate-400">
         {{ form.description.length }}/{{ DESCRIPTION_MAX_LENGTH }}
@@ -130,7 +130,7 @@ async function handleSubmit() {
     <button
       type="submit"
       :disabled="status === 'loading'"
-      class="w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
+      class="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-indigo-500 hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
     >
       {{ status === 'loading' ? 'Creating…' : 'Create subject' }}
     </button>

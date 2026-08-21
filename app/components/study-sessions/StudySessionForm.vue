@@ -101,7 +101,7 @@ onMounted(loadResources)
         v-model="form.subjectId"
         required
         :disabled="status === 'loading' || loadStatus !== 'loaded'"
-        class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none disabled:bg-slate-100"
+        class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-400"
         @change="handleSubjectChange"
       >
         <option value="" disabled>Choose a subject</option>
@@ -119,7 +119,7 @@ onMounted(loadResources)
         id="session-task"
         v-model="form.taskId"
         :disabled="status === 'loading' || !form.subjectId"
-        class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none disabled:bg-slate-100"
+        class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-400"
       >
         <option value="">General study for this subject</option>
         <option v-for="task in availableTasks" :key="task.id" :value="task.id">
@@ -139,7 +139,7 @@ onMounted(loadResources)
         step="1"
         required
         :disabled="status === 'loading'"
-        class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none disabled:bg-slate-100"
+        class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-400"
       >
     </div>
 
@@ -154,7 +154,7 @@ onMounted(loadResources)
     <button
       type="submit"
       :disabled="status === 'loading' || !form.subjectId || loadStatus !== 'loaded'"
-      class="w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
+      class="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-indigo-500 hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
     >
       {{ status === 'loading' ? 'Recording…' : 'Record study session' }}
     </button>
