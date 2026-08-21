@@ -20,12 +20,12 @@ function handleTasksChanged() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 px-4 py-10">
+  <div class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 px-4 py-10">
     <div class="mx-auto max-w-2xl">
       <RecommendedTask ref="recommendedTask" class="mb-6" />
 
-      <div class="rounded-lg bg-white p-8 shadow">
-        <h1 class="text-2xl font-semibold text-slate-900">New task</h1>
+      <div class="rounded-xl bg-white p-8 shadow-md ring-1 ring-slate-900/5">
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">New task</h1>
         <p class="mt-1 text-sm text-slate-500">
           Create a study task under one of your subjects.
         </p>
@@ -35,7 +35,7 @@ function handleTasksChanged() {
         </div>
       </div>
 
-      <section class="mt-6 rounded-lg bg-white p-8 shadow">
+      <section class="mt-6 rounded-xl bg-white p-8 shadow-md ring-1 ring-slate-900/5">
         <TaskList ref="taskList" @changed="handleTasksChanged" />
       </section>
     </div>

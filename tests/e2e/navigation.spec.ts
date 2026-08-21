@@ -31,7 +31,7 @@ test.describe('Navigation', () => {
   test('visually marks the active section on each page', async ({ page }) => {
     await registerAndLandOnDashboard(page)
 
-    const activeClass = 'bg-slate-900'
+    const activeClass = 'bg-indigo-600'
 
     await gotoForm(page, '/dashboard')
     await expect(page.locator('nav').getByRole('link', { name: 'Dashboard' })).toHaveClass(new RegExp(activeClass))

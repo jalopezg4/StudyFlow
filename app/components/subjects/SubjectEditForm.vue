@@ -93,7 +93,7 @@ async function handleSubmit() {
         :maxlength="NAME_MAX_LENGTH"
         :disabled="status === 'loading'"
         required
-        class="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
+        class="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-400"
       >
     </div>
 
@@ -104,7 +104,7 @@ async function handleSubmit() {
         v-model="form.description"
         :maxlength="DESCRIPTION_MAX_LENGTH"
         :disabled="status === 'loading'"
-        class="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
+        class="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-400"
       />
     </div>
 
@@ -112,14 +112,14 @@ async function handleSubmit() {
       <button
         type="submit"
         :disabled="status === 'loading'"
-        class="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
+        class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-indigo-500 hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
       >
         {{ status === 'loading' ? 'Saving…' : 'Save' }}
       </button>
       <button
         type="button"
         :disabled="status === 'loading'"
-        class="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 disabled:opacity-60"
+        class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-150 hover:border-slate-400 hover:bg-slate-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
         @click="emit('cancel')"
       >
         Cancel

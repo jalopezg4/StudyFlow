@@ -89,7 +89,7 @@ defineExpose({ refresh: loadSubjects })
 
 <template>
   <div class="flex flex-col gap-3">
-    <h2 class="text-lg font-medium text-slate-900">My subjects</h2>
+    <h2 class="text-lg font-bold tracking-tight text-slate-900">My subjects</h2>
 
     <p v-if="status === 'loading'" class="text-sm text-slate-600">
       Loading subjects…
@@ -107,7 +107,7 @@ defineExpose({ refresh: loadSubjects })
       <li
         v-for="subject in subjects"
         :key="subject.id"
-        class="rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700"
+        class="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition-shadow hover:shadow-md"
       >
         <SubjectEditForm
           v-if="editingId === subject.id"
@@ -124,7 +124,7 @@ defineExpose({ refresh: loadSubjects })
             <div class="flex shrink-0 gap-3">
               <button
                 type="button"
-                class="text-sm font-medium text-slate-600 underline"
+                class="rounded-full px-2.5 py-1 text-xs font-semibold text-indigo-600 transition-colors hover:bg-indigo-50"
                 @click="startEditing(subject.id)"
               >
                 Edit
@@ -132,7 +132,7 @@ defineExpose({ refresh: loadSubjects })
               <button
                 v-if="confirmingDeleteId !== subject.id"
                 type="button"
-                class="text-sm font-medium text-red-700 underline"
+                class="rounded-full px-2.5 py-1 text-xs font-semibold text-red-600 transition-colors hover:bg-red-50"
                 @click="requestDelete(subject.id)"
               >
                 Delete
@@ -149,7 +149,7 @@ defineExpose({ refresh: loadSubjects })
               <button
                 type="button"
                 :disabled="deletingId === subject.id"
-                class="rounded-md bg-red-700 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
+                class="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-red-500 hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 @click="confirmDelete(subject.id)"
               >
                 {{ deletingId === subject.id ? 'Deleting…' : 'Confirm delete' }}
@@ -157,7 +157,7 @@ defineExpose({ refresh: loadSubjects })
               <button
                 type="button"
                 :disabled="deletingId === subject.id"
-                class="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 disabled:opacity-60"
+                class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-150 hover:border-slate-400 hover:bg-slate-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 @click="cancelDelete(subject.id)"
               >
                 Cancel

@@ -39,8 +39,8 @@ defineExpose({ refresh: loadRecommendation })
 </script>
 
 <template>
-  <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Study this next</h2>
+  <div class="rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-5 shadow-sm">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-indigo-600">Study this next</h2>
 
     <p v-if="status === 'loading'" class="mt-2 text-sm text-slate-600">
       Finding your next task…
@@ -55,10 +55,10 @@ defineExpose({ refresh: loadRecommendation })
     </p>
 
     <div v-else class="mt-2">
-      <span class="mr-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+      <span class="mr-2 rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-semibold text-indigo-700">
         {{ task.subjectName || 'Unknown subject' }}
       </span>
-      <strong class="text-base font-medium text-slate-900">{{ task.title }}</strong>
+      <strong class="text-base font-semibold text-slate-900">{{ task.title }}</strong>
       <span v-if="task.dueDate" class="ml-2 text-xs text-slate-400">Due {{ task.dueDate }}</span>
       <span v-else class="ml-2 text-xs text-slate-400">No due date</span>
     </div>

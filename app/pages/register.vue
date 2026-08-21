@@ -49,9 +49,9 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-    <div class="w-full max-w-sm rounded-lg bg-white p-8 shadow">
-      <h1 class="mb-6 text-2xl font-semibold text-slate-900">Create your account</h1>
+  <div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-white to-indigo-50 px-4">
+    <div class="w-full max-w-sm rounded-xl bg-white p-8 shadow-lg ring-1 ring-slate-900/5">
+      <h1 class="mb-6 text-2xl font-bold tracking-tight text-slate-900">Create your account</h1>
 
       <form class="space-y-4" novalidate @submit.prevent="onSubmit">
         <div>
@@ -61,7 +61,7 @@ async function onSubmit() {
             v-model="email"
             type="email"
             autocomplete="email"
-            class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+            class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
           <p v-if="fieldErrors.email" class="mt-1 text-sm text-red-600">{{ fieldErrors.email }}</p>
         </div>
@@ -78,7 +78,7 @@ async function onSubmit() {
         <button
           type="submit"
           :disabled="isSubmitting"
-          class="w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+          class="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-indigo-500 hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
         >
           {{ isSubmitting ? 'Creating account…' : 'Register' }}
         </button>
@@ -86,7 +86,7 @@ async function onSubmit() {
 
       <p class="mt-4 text-sm text-slate-600">
         Already have an account?
-        <NuxtLink to="/login" class="font-medium text-slate-900 underline">Log in</NuxtLink>
+        <NuxtLink to="/login" class="font-semibold text-indigo-600 hover:text-indigo-500 hover:underline">Log in</NuxtLink>
       </p>
     </div>
   </div>
