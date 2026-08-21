@@ -10,7 +10,7 @@ function uniqueEmail(): string {
 async function registerAndLandOnDashboard(page: import('@playwright/test').Page, email: string): Promise<void> {
   await page.goto('/register')
   await page.getByLabel('Email').fill(email)
-  await page.getByLabel('Password').fill(PASSWORD)
+  await page.getByLabel('Password', { exact: true }).fill(PASSWORD)
   await page.getByRole('button', { name: 'Register' }).click()
   await expect(page).toHaveURL(/\/dashboard$/)
 }
@@ -37,7 +37,7 @@ test.describe('Authentication', () => {
 
     await page.goto('/login')
     await page.getByLabel('Email').fill(email)
-    await page.getByLabel('Password').fill(PASSWORD)
+    await page.getByLabel('Password', { exact: true }).fill(PASSWORD)
     await page.getByRole('button', { name: 'Log in' }).click()
 
     await expect(page).toHaveURL(/\/dashboard$/)
@@ -52,7 +52,7 @@ test.describe('Authentication', () => {
 
     await page.goto('/register')
     await page.getByLabel('Email').fill(email)
-    await page.getByLabel('Password').fill(PASSWORD)
+    await page.getByLabel('Password', { exact: true }).fill(PASSWORD)
     await page.getByRole('button', { name: 'Register' }).click()
 
     // Supabase creates no session for a duplicate email (anti-enumeration behavior), so
@@ -71,7 +71,7 @@ test.describe('Authentication', () => {
 
     await page.goto('/login')
     await page.getByLabel('Email').fill(email)
-    await page.getByLabel('Password').fill('WrongPassword999')
+    await page.getByLabel('Password', { exact: true }).fill('WrongPassword999')
     await page.getByRole('button', { name: 'Log in' }).click()
 
     await expect(page.getByText('Incorrect email or password.')).toBeVisible()
