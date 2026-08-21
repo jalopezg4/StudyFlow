@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-20
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "HU06 - Manage Study Tasks
 

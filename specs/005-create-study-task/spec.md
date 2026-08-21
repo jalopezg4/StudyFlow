@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-19
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "HU05 - Create Study Task
 
