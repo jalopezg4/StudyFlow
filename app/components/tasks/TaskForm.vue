@@ -179,10 +179,14 @@ onMounted(loadSubjects)
       <input
         id="task-due-date"
         v-model="form.dueDate"
-        type="date"
+        type="text"
+        inputmode="numeric"
+        placeholder="YYYY-MM-DD"
+        pattern="\d{4}-\d{2}-\d{2}"
         :disabled="status === 'loading'"
         class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none disabled:bg-slate-100"
       >
+      <p class="mt-1 text-xs text-slate-400">Any date is allowed, including past ones. Format: YYYY-MM-DD.</p>
     </div>
 
     <p v-if="status === 'error'" class="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">

@@ -118,10 +118,14 @@ async function handleSubmit() {
       <input
         :id="`task-edit-due-date-${task.id}`"
         v-model="form.dueDate"
-        type="date"
+        type="text"
+        inputmode="numeric"
+        placeholder="YYYY-MM-DD"
+        pattern="\d{4}-\d{2}-\d{2}"
         :disabled="status === 'loading'"
         class="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
       >
+      <p class="text-xs text-slate-400">Any date is allowed, including past ones. Format: YYYY-MM-DD.</p>
     </div>
 
     <div class="flex gap-2">
