@@ -13,10 +13,22 @@ interface StudyTask {
   createdAt: string
 }
 
+interface Subject {
+  id: string
+  name: string
+}
+
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
 const tasks = ref<StudyTask[]>([])
 const status = ref<Status>('idle')
+const subjects = ref<Subject[]>([])
+const filters = reactive({
+  status: '' as '' | 'pending' | 'completed',
+  subjectId: '',
+  sortBy: '' as '' | 'dueDate' | 'createdAt' | 'title',
+  sortDir: 'asc' as 'asc' | 'desc'
+})
 const errorMessage = ref('')
 const editingId = ref<string | null>(null)
 const confirmingDeleteId = ref<string | null>(null)
@@ -93,12 +105,30 @@ async function confirmDelete(id: string) {
   }
 }
 
+async function loadSubjectsForFilter() {
+  try {
+    const response = await $fetch<{ status: string, subjects: Subject[] }>('/api/subjects')
+    subjects.value = response.subjects
+  } catch {
+    // The subject filter simply offers no options; the task list's own error
+    // state below already covers surfacing a hard failure to the student.
+  }
+}
+
 async function loadTasks() {
   status.value = 'loading'
   errorMessage.value = ''
 
+  const query: Record<string, string> = {}
+  if (filters.status) query.status = filters.status
+  if (filters.subjectId) query.subjectId = filters.subjectId
+  if (filters.sortBy) {
+    query.sortBy = filters.sortBy
+    query.sortDir = filters.sortDir
+  }
+
   try {
-    const response = await $fetch<{ status: string, tasks: StudyTask[] }>('/api/tasks')
+    const response = await $fetch<{ status: string, tasks: StudyTask[] }>('/api/tasks', { query })
     tasks.value = response.tasks
     status.value = 'success'
   } catch (error) {
@@ -107,7 +137,10 @@ async function loadTasks() {
   }
 }
 
-onMounted(loadTasks)
+onMounted(() => {
+  loadSubjectsForFilter()
+  loadTasks()
+})
 
 defineExpose({ refresh: loadTasks })
 </script>
@@ -115,6 +148,65 @@ defineExpose({ refresh: loadTasks })
 <template>
   <div class="flex flex-col gap-3">
     <h2 class="text-lg font-medium text-slate-900">My tasks</h2>
+
+    <div class="flex flex-wrap items-end gap-3 rounded-md border border-slate-200 bg-slate-50 p-3">
+      <div>
+        <label for="filter-status" class="block text-xs font-medium text-slate-600">Status</label>
+        <select
+          id="filter-status"
+          v-model="filters.status"
+          class="mt-1 rounded-md border border-slate-300 px-2 py-1 text-sm"
+          @change="loadTasks"
+        >
+          <option value="">All</option>
+          <option value="pending">Pending</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="filter-subject" class="block text-xs font-medium text-slate-600">Subject</label>
+        <select
+          id="filter-subject"
+          v-model="filters.subjectId"
+          class="mt-1 rounded-md border border-slate-300 px-2 py-1 text-sm"
+          @change="loadTasks"
+        >
+          <option value="">All</option>
+          <option v-for="subject in subjects" :key="subject.id" :value="subject.id">
+            {{ subject.name }}
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label for="filter-sort" class="block text-xs font-medium text-slate-600">Sort by</label>
+        <select
+          id="filter-sort"
+          v-model="filters.sortBy"
+          class="mt-1 rounded-md border border-slate-300 px-2 py-1 text-sm"
+          @change="loadTasks"
+        >
+          <option value="">Default (newest first)</option>
+          <option value="dueDate">Due date</option>
+          <option value="createdAt">Created date</option>
+          <option value="title">Title</option>
+        </select>
+      </div>
+
+      <div v-if="filters.sortBy">
+        <label for="filter-direction" class="block text-xs font-medium text-slate-600">Direction</label>
+        <select
+          id="filter-direction"
+          v-model="filters.sortDir"
+          class="mt-1 rounded-md border border-slate-300 px-2 py-1 text-sm"
+          @change="loadTasks"
+        >
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+      </div>
+    </div>
 
     <p v-if="status === 'loading'" class="text-sm text-slate-600">
       Loading tasks…
@@ -125,7 +217,9 @@ defineExpose({ refresh: loadTasks })
     </p>
 
     <p v-else-if="tasks.length === 0" class="text-sm text-slate-600">
-      You don't have any tasks yet.
+      {{ filters.status || filters.subjectId
+        ? 'No tasks match these filters.'
+        : "You don't have any tasks yet." }}
     </p>
 
     <ul v-else class="flex flex-col gap-2">

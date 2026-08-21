@@ -9,7 +9,10 @@ interface TestEventContext {
   supabase?: typeof testSupabaseClient
 }
 
-export function createTestEvent(userId?: string): H3Event {
+export function createTestEvent(
+  userId?: string,
+  query?: Record<string, string | string[]>
+): H3Event {
   const context: TestEventContext = {
     supabase: testSupabaseClient
   }
@@ -18,7 +21,17 @@ export function createTestEvent(userId?: string): H3Event {
     context.auth = { userId }
   }
 
+  const params = new URLSearchParams()
+  for (const [key, value] of Object.entries(query ?? {})) {
+    for (const entry of Array.isArray(value) ? value : [value]) {
+      params.append(key, entry)
+    }
+  }
+  const search = params.toString()
+
   return {
-    context
+    context,
+    // h3's getQuery(event) reads event.path, not a real Node request.
+    path: search ? `/?${search}` : '/'
   } as unknown as H3Event
 }
