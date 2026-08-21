@@ -16,7 +16,7 @@
 
 **Purpose**: Create the project structure and baseline tooling needed before implementation begins.
 
-- [ ] T001 Create repository scaffold and contribution layout in README.md, .env.example, app/, server/, shared/, tests/, and package.json
+- [x] T001 Create repository scaffold and contribution layout in README.md, .env.example, app/, server/, shared/, tests/, and package.json
 - [x] T002 [P] Initialize the Nuxt 4 + TypeScript project and install base dependencies in package.json, nuxt.config.ts, and lockfile
 - [x] T003 [P] Configure linting, formatting, and TypeScript project settings in package.json, tsconfig.json, and eslint.config.*
 
@@ -26,12 +26,12 @@
 
 **Purpose**: Establish the core infrastructure required before any story can be implemented.
 
-- [ ] T004 Create shared validation and type foundations in shared/types/*.ts and shared/schemas/*.ts
-- [ ] T005 [P] Configure environment management and secure local configuration in .env.example, server/utils/env.ts, and README.md
-- [ ] T006 [P] Create the app and server base structure with routing and middleware foundations in app/app.vue, app/layouts/default.vue, app/middleware/, and server/middleware/
+- [x] T004 Create shared validation and type foundations in shared/types/*.ts and shared/schemas/*.ts (superseded — see Traceability Notes)
+- [x] T005 [P] Configure environment management and secure local configuration in .env.example, server/utils/env.ts, and README.md (superseded — see Traceability Notes)
+- [x] T006 [P] Create the app and server base structure with routing and middleware foundations in app/app.vue, app/layouts/default.vue, app/middleware/, and server/middleware/ (superseded — see Traceability Notes)
 - [x] T007 Configure automated testing baselines and workspace commands in package.json, vitest.config.ts, playwright.config.ts, and tests/
-- [ ] T008 Establish error handling and runtime conventions in server/utils/, app/utils/, and README.md
-- [ ] T009 Create contributor onboarding and local validation instructions in README.md and quickstart.md
+- [x] T008 Establish error handling and runtime conventions in server/utils/, app/utils/, and README.md (partially superseded — see Traceability Notes)
+- [x] T009 Create contributor onboarding and local validation instructions in README.md and quickstart.md (superseded — see Traceability Notes)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel.
 
@@ -45,10 +45,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T010 [P] [US1] Document the setup flow and required environment variables in README.md and .env.example
-- [ ] T011 [US1] Create the default app shell and landing page structure in app/app.vue, app/layouts/default.vue, and app/pages/index.vue
+- [x] T010 [P] [US1] Document the setup flow and required environment variables in README.md and .env.example
+- [x] T011 [US1] Create the default app shell and landing page structure in app/app.vue, app/layouts/default.vue, and app/pages/index.vue (no `app/layouts/` — see Traceability Notes)
 - [x] T012 [US1] Add a minimal server health endpoint in server/api/health.get.ts to confirm the backend is running
-- [ ] T013 [US1] Validate developer startup commands and local workflow in package.json and quickstart.md
+- [x] T013 [US1] Validate developer startup commands and local workflow in package.json and quickstart.md
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently.
 
@@ -62,10 +62,10 @@
 
 ### Implementation for User Story 2
 
-- [ ] T014 [P] [US2] Add shared validation rules and schema helpers in shared/schemas/*.ts and shared/types/*.ts
-- [ ] T015 [P] [US2] Set up unit and integration test structure in tests/unit/, tests/integration/, and vitest.config.ts
-- [ ] T016 [US2] Add Playwright smoke-test baseline and browser configuration in playwright.config.ts and tests/e2e/
-- [ ] T017 [US2] Standardize validation commands and release gates in package.json, README.md, and quickstart.md
+- [x] T014 [P] [US2] Add shared validation rules and schema helpers in shared/schemas/*.ts and shared/types/*.ts (superseded — see Traceability Notes)
+- [x] T015 [P] [US2] Set up unit and integration test structure in tests/unit/, tests/integration/, and vitest.config.ts (superseded — see Traceability Notes)
+- [x] T016 [US2] Add Playwright smoke-test baseline and browser configuration in playwright.config.ts and tests/e2e/
+- [x] T017 [US2] Standardize validation commands and release gates in package.json, README.md, and quickstart.md
 
 **Checkpoint**: At this point, User Stories 1 and 2 should both work independently.
 
@@ -79,9 +79,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T018 [P] [US3] Configure production-safe app and server assets in nuxt.config.ts, app.config.ts, and package.json
-- [ ] T019 [US3] Validate production build command output and required deployment assumptions in README.md and quickstart.md
-- [ ] T020 [US3] Finalize release-readiness documentation and bootstrap verification checklist in README.md, quickstart.md, and specs/001-project-bootstrap/
+- [x] T018 [P] [US3] Configure production-safe app and server assets in nuxt.config.ts, app.config.ts, and package.json (no `app.config.ts` — see Traceability Notes)
+- [x] T019 [US3] Validate production build command output and required deployment assumptions in README.md and quickstart.md
+- [ ] T020 [US3] Finalize release-readiness documentation and bootstrap verification checklist in README.md, quickstart.md, and specs/001-project-bootstrap/ (deferred to issue #35's Demo Readiness Pack — genuinely not yet delivered)
 
 **Checkpoint**: All user stories should now be independently functional.
 
@@ -91,8 +91,8 @@
 
 **Purpose**: Improve consistency and maintainability across all bootstrap work.
 
-- [ ] T021 [P] Review repository conventions for naming, folder layout, and security hygiene across app/, server/, shared/, tests/, README.md, and .env.example
-- [ ] T022 [P] Standardize documentation quality and onboarding clarity across README.md, quickstart.md, and the project bootstrap artifacts
+- [x] T021 [P] Review repository conventions for naming, folder layout, and security hygiene across app/, server/, shared/, tests/, README.md, and .env.example (done continuously, HU by HU — see Traceability Notes)
+- [x] T022 [P] Standardize documentation quality and onboarding clarity across README.md, quickstart.md, and the project bootstrap artifacts (done continuously, HU by HU — see Traceability Notes)
 - [x] T023 Run the full bootstrap validation sequence against the project quickstart and confirm that the foundation is ready for future user-story work
 
 ---
@@ -171,3 +171,13 @@ This scope delivers immediate value while keeping the project stable enough for 
 - Each story remains independently completable and testable
 - The bootstrap intentionally excludes product user stories and keeps focus on architecture, tooling, and release readiness
 - No task should assume a separate backend framework beyond the Nuxt/Nitro baseline required by the constitution
+
+## Traceability Notes
+
+Closed retroactively on 2026-08-21 as part of a repo-wide spec/task traceability cleanup (see issue #35). Every checkbox above reflects the actual current repository, not a re-implementation performed just now. Several tasks describe a specific file layout that the project ended up not needing, or replaced with an equivalent pattern that emerged naturally as HU01 onward were built — those are marked "superseded" rather than literally satisfied:
+
+- **T004/T005/T006/T009/T014/T015 (shared `types/`/`schemas/`, `server/utils/env.ts`, `app/layouts/`, root `quickstart.md`, `tests/integration/`)**: none of these exact paths exist. In practice: validation schemas live per-domain next to the code that uses them (`server/utils/{tasks,subjects,security}/schemas.ts`, `shared/utils/auth-schemas.ts`) rather than in a central `shared/types`/`shared/schemas`; environment access goes through Nuxt's built-in `useRuntimeConfig()` (see `nuxt.config.ts`) instead of a custom `env.ts` wrapper; no `app/layouts/` exists because the app never needed a shared layout beyond `app.vue` itself; contributor/validation docs live in `README.md` plus one `quickstart.md` per feature under `specs/*/` (the pattern every HU since has followed) instead of a single root `quickstart.md`; and integration-style coverage lives per-domain (`tests/tasks/`, `tests/subjects/`, `tests/security/`) rather than in a generic `tests/integration/`. All of these are equivalent, intentional replacements for what the task described, not gaps.
+- **T008 (error handling conventions)**: the server side is fully covered (`server/utils/security/errors.ts`, `docs/security/server-security-conventions.md`). No shared `app/utils/` error helper was ever created — each Vue component repeats a small `extractErrorMessage(error)` helper inline instead. This is real, minor, non-blocking duplication (not a functional gap) rather than something already resolved; a future pass could factor it into one shared composable if it becomes worth the refactor.
+- **T018 (`app.config.ts`)**: not created because the app never needed Nuxt App Config-level runtime customization; `nuxt.config.ts` alone has been sufficient for every production build so far.
+- **T020**: genuinely not done. This is exactly what issue #35's Demo Readiness Pack (runbook + traceability matrix + smoke-test checklist) is scoped to deliver — left unchecked here on purpose rather than marked done early.
+- **T021/T022 (repository-convention and documentation-quality review)**: never performed as one dedicated pass. In practice this happened continuously — every HU's `plan.md`/`research.md` documents structure and naming decisions, and `docs/security/*.md` covers security hygiene — so the objective was met incrementally rather than as a single checklist item.

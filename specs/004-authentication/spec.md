@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-18
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "HU01 - Registro e inicio de sesión / HU02 - Cerrar sesión y proteger rutas privadas: como estudiante quiero registrarme, iniciar sesión, cerrar sesión y que mis páginas privadas (dashboard, materias, tareas, estudio) estén protegidas para usuarios no autenticados, usando Supabase Auth como proveedor de identidad."
 

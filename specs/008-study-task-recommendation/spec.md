@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-20
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "Implement US08 - Study Task Recommendation. As a student, I want StudyFlow to recommend what I should study first, so that I can prioritize my study time effectively. StudyFlow must generate a recommendation using the authenticated user's available study tasks and defined prioritization criteria. Completed tasks must not be recommended. The recommendation must use explicit, deterministic and testable prioritization criteria. The recommendation must never include another user's task. Reuse the existing Study Task model and APIs from US05/US06; follow the TECH-03 security and quality baseline; do not use unrestricted AI/LLM-generated decisions; do not create a parallel task model."
 

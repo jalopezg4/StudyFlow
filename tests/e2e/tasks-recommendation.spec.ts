@@ -1,21 +1,9 @@
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
-
-const PASSWORD = 'TestPass123'
-
-function uniqueEmail(): string {
-  return `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`
-}
+import { registerAndLandOnDashboard } from './helpers'
 
 async function registerAndGoToTasks(page: Page): Promise<void> {
-  const email = uniqueEmail()
-
-  await page.goto('/register')
-  await page.getByLabel('Email').fill(email)
-  await page.getByLabel('Password', { exact: true }).fill(PASSWORD)
-  await page.getByRole('button', { name: 'Register' }).click()
-  await expect(page).toHaveURL(/\/dashboard$/)
-
+  await registerAndLandOnDashboard(page)
   await page.goto('/tasks')
 }
 
