@@ -93,7 +93,7 @@ async function confirmDelete(id: string) {
   deletingId.value = id
 
   try {
-    await $fetch(`/api/tasks/${id}`, { method: 'DELETE' })
+    await $fetch<{ status: string, id: string }>(`/api/tasks/${id}`, { method: 'DELETE' })
     tasks.value = tasks.value.filter((task) => task.id !== id)
     confirmingDeleteId.value = null
     deleteErrors[id] = ''

@@ -138,6 +138,35 @@ export async function listStudyTasksForOwner(
   return (data as unknown as StudyTaskRow[]).map(toStudyTask)
 }
 
+// Ranks eligible (pending) tasks by soonest due date first - PostgreSQL's own
+// NULLS LAST default on ascending order means an undated task is only ever
+// picked when no dated eligible task exists. Ties broken by oldest createdAt,
+// then id, for a total order (spec.md's Clarifications session + Prioritization
+// Rule). This is a dedicated query, not a call into listStudyTasksForOwner,
+// since that function's sort always tiebreaks by id immediately - it has no
+// createdAt step in between (see research.md Decision 2).
+export async function getRecommendedTaskForOwner(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<StudyTask | null> {
+  const { data, error } = await supabase
+    .from('study_tasks')
+    .select(TASK_COLUMNS)
+    .eq('user_id', userId)
+    .eq('status', 'pending')
+    .order('due_date', { ascending: true })
+    .order('created_at', { ascending: true })
+    .order('id', { ascending: true })
+    .limit(1)
+    .maybeSingle()
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return data ? toStudyTask(data as unknown as StudyTaskRow) : null
+}
+
 export async function getStudyTaskForOwner(
   supabase: SupabaseClient,
   userId: string,
