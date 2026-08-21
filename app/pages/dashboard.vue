@@ -26,7 +26,7 @@ definePageMeta({ layout: 'authenticated' })
         </NuxtLink>
         <NuxtLink
           to="/study-sessions"
-          class="inline-flex w-fit items-center rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+          class="inline-flex w-fit items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-150 hover:border-slate-400 hover:bg-slate-50 active:scale-[0.98]"
         >
           Record study session
         </NuxtLink>
