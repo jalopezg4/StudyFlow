@@ -1,19 +1,7 @@
 import { expect, test } from '@playwright/test'
+import { gotoForm, registerAndLandOnDashboard, uniqueEmail } from './helpers'
 
 const PASSWORD = 'TestPass123'
-
-function uniqueEmail(): string {
-  return `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`
-}
-
-/** Registers a brand-new account. A fresh email always gets a session, so this lands on /dashboard. */
-async function registerAndLandOnDashboard(page: import('@playwright/test').Page, email: string): Promise<void> {
-  await page.goto('/register')
-  await page.getByLabel('Email').fill(email)
-  await page.getByLabel('Password', { exact: true }).fill(PASSWORD)
-  await page.getByRole('button', { name: 'Register' }).click()
-  await expect(page).toHaveURL(/\/dashboard$/)
-}
 
 async function logout(page: import('@playwright/test').Page): Promise<void> {
   await page.getByRole('button', { name: 'Log out' }).click()
@@ -35,7 +23,7 @@ test.describe('Authentication', () => {
     await registerAndLandOnDashboard(page, email)
     await logout(page)
 
-    await page.goto('/login')
+    await gotoForm(page, '/login')
     await page.getByLabel('Email').fill(email)
     await page.getByLabel('Password', { exact: true }).fill(PASSWORD)
     await page.getByRole('button', { name: 'Log in' }).click()
@@ -50,7 +38,7 @@ test.describe('Authentication', () => {
     await registerAndLandOnDashboard(page, email)
     await logout(page)
 
-    await page.goto('/register')
+    await gotoForm(page, '/register')
     await page.getByLabel('Email').fill(email)
     await page.getByLabel('Password', { exact: true }).fill(PASSWORD)
     await page.getByRole('button', { name: 'Register' }).click()
@@ -69,7 +57,7 @@ test.describe('Authentication', () => {
     await registerAndLandOnDashboard(page, email)
     await logout(page)
 
-    await page.goto('/login')
+    await gotoForm(page, '/login')
     await page.getByLabel('Email').fill(email)
     await page.getByLabel('Password', { exact: true }).fill('WrongPassword999')
     await page.getByRole('button', { name: 'Log in' }).click()

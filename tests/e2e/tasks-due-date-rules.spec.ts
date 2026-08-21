@@ -1,10 +1,5 @@
 import { expect, test } from '@playwright/test'
-
-const PASSWORD = 'TestPass123'
-
-function uniqueEmail(): string {
-  return `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`
-}
+import { registerAndLandOnDashboard } from './helpers'
 
 // UTC, to match the server's clock and the DatePicker's own UTC-based "today".
 function toDateStr(date: Date): string {
@@ -13,15 +8,11 @@ function toDateStr(date: Date): string {
 
 test.describe('Study task due date rules', () => {
   test('the create-task calendar disables past days; the edit-task calendar does not', async ({ page }) => {
-    const email = uniqueEmail()
-    await page.goto('/register')
-    await page.getByLabel('Email').fill(email)
-    await page.getByLabel('Password', { exact: true }).fill(PASSWORD)
-    await page.getByRole('button', { name: 'Register' }).click()
-    await expect(page).toHaveURL(/\/dashboard$/)
+    await registerAndLandOnDashboard(page)
 
     await page.request.post('/api/subjects', { data: { name: 'Math' } })
     await page.goto('/tasks')
+    await page.waitForLoadState('networkidle')
 
     const todayStr = toDateStr(new Date())
 
