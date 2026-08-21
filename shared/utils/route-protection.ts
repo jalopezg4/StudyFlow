@@ -1,4 +1,4 @@
-export const PRIVATE_PATH_PREFIXES = ['/dashboard']
+export const PRIVATE_PATH_PREFIXES = ['/dashboard', '/subjects', '/tasks', '/study-sessions']
 export const AUTH_ONLY_PATHS = ['/login', '/register']
 
 export function isPrivatePath(path: string): boolean {
