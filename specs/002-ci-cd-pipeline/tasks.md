@@ -90,7 +90,7 @@
 **Purpose**: Tighten wording, keep terminology consistent, and verify the documented workflow end to end
 
 - [x] T017 [P] Align CI/CD terminology across README.md, specs/002-ci-cd-pipeline/quickstart.md, and specs/002-ci-cd-pipeline/contracts/ci-cd-workflow-contract.md
-- [ ] T018 Run the documented CI/CD validation walkthrough in specs/002-ci-cd-pipeline/quickstart.md and capture any final wording fixes in README.md
+- [X] T018 Run the documented CI/CD validation walkthrough in specs/002-ci-cd-pipeline/quickstart.md and capture any final wording fixes in README.md
 
 ---
 
@@ -175,3 +175,13 @@ With multiple developers:
 - Each user story should be independently completable and testable
 - Avoid custom deployment services; use Vercel Git integration for previews and production
 - Keep Snyk findings High/Critical blocking once the scanner is configured
+
+## Validation Evidence
+
+Closed retroactively on 2026-08-21 as part of a repo-wide spec/task traceability cleanup (see issue #35). Walkthrough against [quickstart.md](quickstart.md)'s 5 scenarios:
+
+- **Scenario 1 (PR validation)**: Confirmed repeatedly across PRs #31-#34 — `Validate` (lint, typecheck, test, build, Snyk) and, where labeled, `E2E` show as required/visible status checks before merge.
+- **Scenario 2 (Main branch validation)**: Confirmed — `push` events to `main` trigger the same `Validate` job (e.g. runs following #31-#33 merging).
+- **Scenario 3 (Preview deployment)** and **Scenario 4 (Production deployment)**: **Not verified from this repository** — Vercel's Git integration is configured externally (no `vercel.json` or equivalent is versioned here), so preview/production deployment behavior can't be confirmed from code alone. Tracked as an open item in issue #35.
+- **Scenario 5 (Security scanning)**: Confirmed — `SNYK_TOKEN` is configured, so the scan runs and gates the job (`--severity-threshold=high`); the "reports a skipped scan when `SNYK_TOKEN` is not configured" sub-case (step 4) was actually not yet implemented until now — fixed in #34, which added exactly that graceful-skip behavior.
+- README.md wording (line 31-37) already accurately describes this — no wording fix was needed.
