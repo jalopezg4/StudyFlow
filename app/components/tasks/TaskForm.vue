@@ -58,6 +58,19 @@ function validate(): string | null {
     return `Description cannot exceed ${DESCRIPTION_MAX_LENGTH} characters.`
   }
 
+  if (form.dueDate) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(form.dueDate)) {
+      return 'Due date must be in YYYY-MM-DD format.'
+    }
+
+    const today = new Date()
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+
+    if (form.dueDate < todayStr) {
+      return 'Due date cannot be in the past.'
+    }
+  }
+
   return null
 }
 
@@ -186,7 +199,7 @@ onMounted(loadSubjects)
         :disabled="status === 'loading'"
         class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none disabled:bg-slate-100"
       >
-      <p class="mt-1 text-xs text-slate-400">Any date is allowed, including past ones. Format: YYYY-MM-DD.</p>
+      <p class="mt-1 text-xs text-slate-400">Format: YYYY-MM-DD. Must be today or a future date.</p>
     </div>
 
     <p v-if="status === 'error'" class="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">

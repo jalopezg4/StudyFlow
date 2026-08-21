@@ -34,6 +34,18 @@ function isValidCalendarDate(value: string): boolean {
   )
 }
 
+// Server's own clock is the source of truth for "today" - never trust a
+// client-supplied notion of the current date.
+function isPastDate(value: string): boolean {
+  const [year, month, day] = value.split('-').map(Number)
+  const inputDateUtc = Date.UTC(year!, month! - 1, day!)
+
+  const now = new Date()
+  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+
+  return inputDateUtc < todayUtc
+}
+
 export const CreateStudyTaskSchema = z.object({
   subjectId: z.string().trim().uuid('Subject must be a valid identifier'),
   title: z
@@ -57,6 +69,9 @@ export const CreateStudyTaskSchema = z.object({
     })
     .refine((value) => value === undefined || isValidCalendarDate(value), {
       message: 'Due date must be a valid date'
+    })
+    .refine((value) => value === undefined || !isPastDate(value), {
+      message: 'Due date cannot be in the past'
     })
 })
 

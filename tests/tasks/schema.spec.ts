@@ -84,11 +84,34 @@ describe('CreateStudyTaskSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('accepts a due date far in the past with no restriction', () => {
+  it('rejects a due date in the past', () => {
     const result = CreateStudyTaskSchema.safeParse({
       subjectId: '11111111-1111-1111-1111-111111111111',
       title: 'Catch-up work',
       dueDate: '2000-01-01'
+    })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('accepts a due date of today', () => {
+    const today = new Date()
+    const todayStr = `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, '0')}-${String(today.getUTCDate()).padStart(2, '0')}`
+
+    const result = CreateStudyTaskSchema.safeParse({
+      subjectId: '11111111-1111-1111-1111-111111111111',
+      title: 'Do it today',
+      dueDate: todayStr
+    })
+
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts a due date in the future', () => {
+    const result = CreateStudyTaskSchema.safeParse({
+      subjectId: '11111111-1111-1111-1111-111111111111',
+      title: 'Future work',
+      dueDate: '2099-01-01'
     })
 
     expect(result.success).toBe(true)
