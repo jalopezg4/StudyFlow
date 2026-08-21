@@ -20,6 +20,10 @@ interface Subject {
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
+const emit = defineEmits<{
+  changed: []
+}>()
+
 const tasks = ref<StudyTask[]>([])
 const status = ref<Status>('idle')
 const subjects = ref<Subject[]>([])
@@ -53,6 +57,7 @@ function handleUpdated(updated: StudyTask) {
   if (editingId.value === updated.id) {
     editingId.value = null
   }
+  emit('changed')
 }
 
 function extractErrorMessage(error: unknown): string {
@@ -93,10 +98,11 @@ async function confirmDelete(id: string) {
   deletingId.value = id
 
   try {
-    await $fetch(`/api/tasks/${id}`, { method: 'DELETE' })
+    await $fetch<{ status: string, id: string }>(`/api/tasks/${id}`, { method: 'DELETE' })
     tasks.value = tasks.value.filter((task) => task.id !== id)
     confirmingDeleteId.value = null
     deleteErrors[id] = ''
+    emit('changed')
   } catch (error) {
     const fetchError = error as { data?: { error?: { message?: string } } }
     deleteErrors[id] = fetchError.data?.error?.message ?? 'Could not delete the task. Please try again.'

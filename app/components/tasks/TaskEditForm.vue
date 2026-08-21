@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
+import DatePicker from '~/components/DatePicker.vue'
 
 interface StudyTask {
   id: string
@@ -115,13 +116,13 @@ async function handleSubmit() {
 
     <div class="flex flex-col gap-1">
       <label :for="`task-edit-due-date-${task.id}`" class="text-sm font-medium text-slate-700">Due date (optional)</label>
-      <input
+      <DatePicker
         :id="`task-edit-due-date-${task.id}`"
         v-model="form.dueDate"
-        type="date"
         :disabled="status === 'loading'"
-        class="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
-      >
+        placeholder="Select a date"
+      />
+      <p class="text-xs text-slate-400">Any date is allowed here, including past ones.</p>
     </div>
 
     <div class="flex gap-2">

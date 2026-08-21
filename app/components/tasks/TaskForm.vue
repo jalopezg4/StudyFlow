@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
+import DatePicker from '~/components/DatePicker.vue'
 
 interface Subject {
   id: string
@@ -38,6 +39,12 @@ const status = ref<Status>('idle')
 const errorMessage = ref('')
 const subjects = ref<Subject[]>([])
 const subjectsStatus = ref<'loading' | 'loaded' | 'error'>('loading')
+
+// UTC, to match the server's own clock exactly (server/utils/tasks/schemas.ts's
+// isPastDate) - using local time here could disagree with the server by a day
+// depending on the browser's timezone and time of day.
+const today = new Date()
+const todayStr = `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, '0')}-${String(today.getUTCDate()).padStart(2, '0')}`
 
 function validate(): string | null {
   if (!form.subjectId) {
@@ -176,13 +183,15 @@ onMounted(loadSubjects)
       <label for="task-due-date" class="block text-sm font-medium text-slate-700">
         Due date <span class="font-normal text-slate-400">(optional)</span>
       </label>
-      <input
+      <DatePicker
         id="task-due-date"
         v-model="form.dueDate"
-        type="date"
+        :min-date="todayStr"
         :disabled="status === 'loading'"
-        class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none disabled:bg-slate-100"
-      >
+        placeholder="Select a date"
+        class="mt-1"
+      />
+      <p class="mt-1 text-xs text-slate-400">Past dates are disabled — a task can't be due before today.</p>
     </div>
 
     <p v-if="status === 'error'" class="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">

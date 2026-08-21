@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import { useTemplateRef } from 'vue'
+import RecommendedTask from '~/components/tasks/RecommendedTask.vue'
 import TaskForm from '~/components/tasks/TaskForm.vue'
 import TaskList from '~/components/tasks/TaskList.vue'
 
 const taskList = useTemplateRef('taskList')
+const recommendedTask = useTemplateRef('recommendedTask')
 
 function handleCreated() {
   taskList.value?.refresh()
+  recommendedTask.value?.refresh()
+}
+
+function handleTasksChanged() {
+  recommendedTask.value?.refresh()
 }
 </script>
 
@@ -20,6 +27,8 @@ function handleCreated() {
         ← Back to dashboard
       </NuxtLink>
 
+      <RecommendedTask ref="recommendedTask" class="mb-6" />
+
       <div class="rounded-lg bg-white p-8 shadow">
         <h1 class="text-2xl font-semibold text-slate-900">New task</h1>
         <p class="mt-1 text-sm text-slate-500">
@@ -32,7 +41,7 @@ function handleCreated() {
       </div>
 
       <section class="mt-6 rounded-lg bg-white p-8 shadow">
-        <TaskList ref="taskList" />
+        <TaskList ref="taskList" @changed="handleTasksChanged" />
       </section>
     </div>
   </div>
