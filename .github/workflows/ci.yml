@@ -47,9 +47,15 @@ jobs:
         run: npm run build
 
       - name: Security scan with Snyk
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: npx snyk test --severity-threshold=high
+
+      - name: Warn if Snyk was skipped
+        if: ${{ secrets.SNYK_TOKEN == '' }}
+        run: |
+          echo "::warning::SNYK_TOKEN secret is not set - security scan was skipped, not passed."
 
   e2e:
     name: E2E
