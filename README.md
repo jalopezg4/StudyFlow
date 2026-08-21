@@ -1,7 +1,18 @@
 # StudyFlow
 
-Shared Nuxt 4 + Vue 3 + TypeScript foundation for the StudyFlow app.
-See [`specs/001-project-bootstrap/quickstart.md`](specs/001-project-bootstrap/quickstart.md) for setup and validation.
+A Nuxt 4 + Vue 3 + TypeScript app that helps students organize and stay on top of their studying. Built with Supabase (Auth + Postgres with Row Level Security) for persistence, following Spec-Driven Development — every feature has a spec, plan, and tasks file under [`specs/`](specs/) before implementation.
+
+Current functionality:
+
+- **Authentication**: registration, login, logout, and private route protection ([`specs/004-authentication`](specs/004-authentication)).
+- **Subjects**: create and manage the subjects a student is studying ([`specs/004-subject-management`](specs/004-subject-management), [`specs/005-manage-subjects`](specs/005-manage-subjects)).
+- **Study Tasks**: create, edit, complete, and delete tasks under a subject ([`specs/005-create-study-task`](specs/005-create-study-task), [`specs/006-manage-study-tasks`](specs/006-manage-study-tasks)).
+- **Filter and Sort**: filter tasks by status/subject and sort by due date, created date, or title ([`specs/007-filter-sort-study-tasks`](specs/007-filter-sort-study-tasks)).
+- **Recommendation**: surfaces the most urgent task to study next ([`specs/008-study-task-recommendation`](specs/008-study-task-recommendation)).
+- **Navigation & UX**: a persistent nav (Dashboard / My Subjects / My Tasks / Log out) reachable from every authenticated page ([`specs/009-nav-ux-polish`](specs/009-nav-ux-polish)).
+- **Study Sessions**: record time spent studying a subject or task ([`specs/009-study-session-recording`](specs/009-study-session-recording)).
+
+See [`specs/001-project-bootstrap/quickstart.md`](specs/001-project-bootstrap/quickstart.md) for the original project setup and validation baseline.
 
 ## Security Baseline
 
@@ -50,6 +61,16 @@ Copy the environment template and populate required values (do not commit secret
 Then start the app:
 
     npm run dev
+
+## Testing
+
+    npm run lint        # ESLint
+    npm run typecheck    # nuxt typecheck (Vue + TypeScript)
+    npm run test         # Vitest unit/integration tests
+    npm run test:e2e     # Playwright end-to-end tests (local dev server)
+    npm run smoke:prod   # Playwright smoke + isolation tests against production
+
+`npm run test:e2e` and `npm run smoke:prod` use separate Playwright configs (`playwright.config.ts` and `playwright.prod.config.ts`) — the former runs against a local dev server, the latter against the live production URL and is not part of CI.
 
 ## Development Server
 
