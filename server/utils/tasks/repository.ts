@@ -70,15 +70,66 @@ export async function createStudyTask(
   return toStudyTask(data as unknown as StudyTaskRow)
 }
 
+export type TaskListSortBy = 'dueDate' | 'createdAt' | 'title'
+export type TaskListSortDir = 'asc' | 'desc'
+
+export interface StudyTaskListFilter {
+  status?: 'pending' | 'completed'
+  subjectId?: string
+}
+
+export interface StudyTaskListSort {
+  by: TaskListSortBy
+  direction?: TaskListSortDir
+}
+
+// Indexed only by the already-validated TaskListSortBy union, so there is no
+// code path from raw query-string input to an arbitrary .order() column.
+const SORT_COLUMN: Record<TaskListSortBy, string> = {
+  dueDate: 'due_date',
+  createdAt: 'created_at',
+  title: 'title'
+}
+
+// Applied only when a sortBy is supplied without an explicit sortDir.
+const DEFAULT_SORT_DIRECTION: Record<TaskListSortBy, TaskListSortDir> = {
+  dueDate: 'asc',
+  createdAt: 'desc',
+  title: 'asc'
+}
+
 export async function listStudyTasksForOwner(
   supabase: SupabaseClient,
-  userId: string
+  userId: string,
+  filter?: StudyTaskListFilter,
+  sort?: StudyTaskListSort
 ): Promise<StudyTask[]> {
-  const { data, error } = await supabase
-    .from('study_tasks')
-    .select(TASK_COLUMNS)
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
+  let query = supabase.from('study_tasks').select(TASK_COLUMNS).eq('user_id', userId)
+
+  if (filter?.status !== undefined) {
+    query = query.eq('status', filter.status)
+  }
+
+  // Not a subject-ownership check: a task owned by userId can only ever
+  // reference a subject userId also owns (enforced at task creation), so
+  // this filter naturally yields an empty result for an unowned subject.
+  if (filter?.subjectId !== undefined) {
+    query = query.eq('subject_id', filter.subjectId)
+  }
+
+  if (sort !== undefined) {
+    const direction = sort.direction ?? DEFAULT_SORT_DIRECTION[sort.by]
+    query = query.order(SORT_COLUMN[sort.by], { ascending: direction === 'asc' })
+  } else {
+    // HU06's original, unchanged default.
+    query = query.order('created_at', { ascending: false })
+  }
+
+  // Deterministic tiebreaker on every query, including the default above:
+  // id is a unique, non-null primary key, so no residual tie is possible.
+  query = query.order('id', { ascending: true })
+
+  const { data, error } = await query
 
   if (error) {
     throw new Error(error.message)

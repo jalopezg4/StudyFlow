@@ -102,3 +102,23 @@ export const UpdateStudyTaskSchema = z
   )
 
 export type UpdateStudyTaskInput = z.infer<typeof UpdateStudyTaskSchema>
+
+// Every field is an allow-listed enum (or a format-checked uuid) validated
+// before any query is built — no filter/sort value ever reaches Supabase
+// query construction unless it passes this schema first (FR-007/FR-013).
+// z.enum() naturally rejects a repeated query param (getQuery returns an
+// array in that case, not a string), so duplicate/conflicting values are
+// rejected rather than arbitrarily resolved to one.
+export const TaskListQuerySchema = z
+  .object({
+    status: z.enum(['pending', 'completed']).optional(),
+    subjectId: z.string().trim().uuid('Subject must be a valid identifier').optional(),
+    sortBy: z.enum(['dueDate', 'createdAt', 'title']).optional(),
+    sortDir: z.enum(['asc', 'desc']).optional()
+  })
+  .refine((value) => value.sortDir === undefined || value.sortBy !== undefined, {
+    message: 'sortDir requires sortBy to also be specified',
+    path: ['sortDir']
+  })
+
+export type TaskListQuery = z.infer<typeof TaskListQuerySchema>

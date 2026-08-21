@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CreateStudyTaskSchema, UpdateStudyTaskSchema } from '../../server/utils/tasks/schemas'
+import { CreateStudyTaskSchema, TaskListQuerySchema, UpdateStudyTaskSchema } from '../../server/utils/tasks/schemas'
 
 describe('CreateStudyTaskSchema', () => {
   it('accepts a valid subjectId and title with no other fields', () => {
@@ -319,6 +319,100 @@ describe('UpdateStudyTaskSchema', () => {
     if (result.success) {
       expect(result.data.description).toBeUndefined()
     }
+  })
+})
+
+describe('TaskListQuerySchema', () => {
+  it('accepts an empty query (no filter/sort at all)', () => {
+    const result = TaskListQuerySchema.safeParse({})
+
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts a supported status filter', () => {
+    const result = TaskListQuerySchema.safeParse({ status: 'pending' })
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.status).toBe('pending')
+    }
+  })
+
+  it('rejects an unsupported status value', () => {
+    const result = TaskListQuerySchema.safeParse({ status: 'archived' })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects a case-variant of a supported status value', () => {
+    const result = TaskListQuerySchema.safeParse({ status: 'Pending' })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects a repeated status query parameter (array instead of a single value)', () => {
+    const result = TaskListQuerySchema.safeParse({ status: ['pending', 'completed'] })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('accepts a well-formed subjectId', () => {
+    const result = TaskListQuerySchema.safeParse({ subjectId: '11111111-1111-1111-1111-111111111111' })
+
+    expect(result.success).toBe(true)
+  })
+
+  it('rejects a malformed subjectId', () => {
+    const result = TaskListQuerySchema.safeParse({ subjectId: 'not-a-uuid' })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('accepts a supported sortBy with a supported sortDir', () => {
+    const result = TaskListQuerySchema.safeParse({ sortBy: 'dueDate', sortDir: 'asc' })
+
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts a supported sortBy with no sortDir', () => {
+    const result = TaskListQuerySchema.safeParse({ sortBy: 'title' })
+
+    expect(result.success).toBe(true)
+  })
+
+  it('rejects an unsupported sortBy value', () => {
+    const result = TaskListQuerySchema.safeParse({ sortBy: 'priority' })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects an unsupported sortDir value', () => {
+    const result = TaskListQuerySchema.safeParse({ sortBy: 'dueDate', sortDir: 'ascending' })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects a sortDir supplied without a sortBy', () => {
+    const result = TaskListQuerySchema.safeParse({ sortDir: 'asc' })
+
+    expect(result.success).toBe(false)
+  })
+
+  it('accepts a supported filter and a supported sort together', () => {
+    const result = TaskListQuerySchema.safeParse({
+      status: 'pending',
+      subjectId: '11111111-1111-1111-1111-111111111111',
+      sortBy: 'dueDate',
+      sortDir: 'asc'
+    })
+
+    expect(result.success).toBe(true)
+  })
+
+  it('rejects the whole request when one supported value is paired with one unsupported value', () => {
+    const result = TaskListQuerySchema.safeParse({ status: 'pending', sortBy: 'not-a-real-field' })
+
+    expect(result.success).toBe(false)
   })
 })
 
