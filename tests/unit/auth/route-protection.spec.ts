@@ -14,6 +14,12 @@ describe('resolveRouteGuardAction', () => {
     expect(action).toEqual({ type: 'redirect', to: '/login' })
   })
 
+  it('protects study-session pages from unauthenticated visitors', () => {
+    const action = resolveRouteGuardAction('/study-sessions', false)
+
+    expect(action).toEqual({ type: 'redirect', to: '/login' })
+  })
+
   it('allows authenticated users to access a private path', () => {
     const action = resolveRouteGuardAction('/dashboard', true)
 
