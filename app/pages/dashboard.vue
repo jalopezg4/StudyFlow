@@ -116,19 +116,19 @@ onMounted(loadProgress)
           to="/subjects"
           class="inline-flex w-fit items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:bg-indigo-500 hover:shadow-md active:scale-[0.98]"
         >
-          Create subject
+          My Subjects
         </NuxtLink>
         <NuxtLink
           to="/tasks"
           class="inline-flex w-fit items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-150 hover:border-slate-400 hover:bg-slate-50 active:scale-[0.98]"
         >
-          Create task
+          My Tasks
         </NuxtLink>
         <NuxtLink
           to="/study-sessions"
           class="inline-flex w-fit items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-150 hover:border-slate-400 hover:bg-slate-50 active:scale-[0.98]"
         >
-          Record study session
+          Study Sessions
         </NuxtLink>
       </div>
 

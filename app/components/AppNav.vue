@@ -7,6 +7,7 @@ const links = [
   { label: 'Dashboard', path: '/dashboard' },
   { label: 'My Subjects', path: '/subjects' },
   { label: 'My Tasks', path: '/tasks' },
+  { label: 'Study Sessions', path: '/study-sessions' },
 ]
 
 async function onLogout() {
