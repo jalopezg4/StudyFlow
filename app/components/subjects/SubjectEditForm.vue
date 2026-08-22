@@ -95,6 +95,7 @@ async function handleSubmit() {
         required
         class="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-400"
       >
+      <p class="text-xs text-slate-400">{{ form.name.length }}/{{ NAME_MAX_LENGTH }}</p>
     </div>
 
     <div class="flex flex-col gap-1">
@@ -106,6 +107,7 @@ async function handleSubmit() {
         :disabled="status === 'loading'"
         class="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-400"
       />
+      <p class="text-xs text-slate-400">{{ form.description.length }}/{{ DESCRIPTION_MAX_LENGTH }}</p>
     </div>
 
     <div class="flex gap-2">

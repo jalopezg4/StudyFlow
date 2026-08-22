@@ -66,6 +66,28 @@ test.describe('Authentication', () => {
     await expect(page).toHaveURL(/\/login$/)
   })
 
+  test('clears a field error as soon as the student corrects it (US12 AC07)', async ({ page }) => {
+    await gotoForm(page, '/register')
+
+    await page.getByLabel('Email').fill('not-an-email')
+    await page.getByLabel('Password', { exact: true }).fill('short')
+    await page.getByRole('button', { name: 'Register' }).click()
+
+    const emailError = page.getByText('Enter a valid email address')
+    const passwordError = page.getByText('Password must be at least 8 characters')
+    await expect(emailError).toBeVisible()
+    await expect(passwordError).toBeVisible()
+
+    // Editing only the email field clears only that field's error.
+    await page.getByLabel('Email').fill('student@example.com')
+    await expect(emailError).toBeHidden()
+    await expect(passwordError).toBeVisible()
+
+    // Editing the password field (wrapped by PasswordInput) clears its own error too.
+    await page.getByLabel('Password', { exact: true }).fill('LongEnoughPass123')
+    await expect(passwordError).toBeHidden()
+  })
+
   test('blocks direct access to a private page without a session (US4 CA01)', async ({ page }) => {
     await page.goto('/dashboard')
 
