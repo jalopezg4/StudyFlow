@@ -75,9 +75,9 @@ async function confirmDelete(id: string) {
     if (expandedSubjectId.value === id) {
       expandedSubjectId.value = null
     }
-    delete subjectTasks[id]
-    delete taskStatusBySubject[id]
-    delete taskErrorBySubject[id]
+    subjectTasks[id] = []
+    taskStatusBySubject[id] = 'idle'
+    taskErrorBySubject[id] = ''
     confirmingDeleteId.value = null
     deleteErrors[id] = ''
   } catch (error) {
