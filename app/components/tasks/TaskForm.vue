@@ -40,6 +40,20 @@ const errorMessage = ref('')
 const subjects = ref<Subject[]>([])
 const subjectsStatus = ref<'loading' | 'loaded' | 'error'>('loading')
 
+// Clears a stale 'success'/'error' message as soon as the student actually
+// edits the form again, so it never lingers into the next attempt at a new
+// entry. Tied to the real input event (not a reactive watch on form.title/
+// description) because the programmatic reset after a successful submit
+// below also sets those same fields to '' - a watch can't tell that apart
+// from the student clearing the field themselves, since Vue batches the
+// watcher callback to run after that reset has already landed.
+function clearStaleStatus() {
+  if (status.value === 'success' || status.value === 'error') {
+    status.value = 'idle'
+    errorMessage.value = ''
+  }
+}
+
 // UTC, to match the server's own clock exactly (server/utils/tasks/schemas.ts's
 // isPastDate) - using local time here could disagree with the server by a day
 // depending on the browser's timezone and time of day.
@@ -108,10 +122,10 @@ async function handleSubmit() {
       }
     })
 
-    status.value = 'success'
     form.title = ''
     form.description = ''
     form.dueDate = ''
+    status.value = 'success'
     emit('created', response.task)
   } catch (error) {
     status.value = 'error'
@@ -157,6 +171,7 @@ onMounted(loadSubjects)
         :disabled="status === 'loading'"
         required
         class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-400"
+        @input="clearStaleStatus"
       >
       <p class="mt-1 text-xs text-slate-400">{{ form.title.length }}/{{ TITLE_MAX_LENGTH }}</p>
     </div>
@@ -173,6 +188,7 @@ onMounted(loadSubjects)
         :maxlength="DESCRIPTION_MAX_LENGTH"
         :disabled="status === 'loading'"
         class="mt-1 w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-400"
+        @input="clearStaleStatus"
       />
       <p class="mt-1 text-xs text-slate-400">
         {{ form.description.length }}/{{ DESCRIPTION_MAX_LENGTH }}
