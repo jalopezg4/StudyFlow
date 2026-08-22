@@ -23,6 +23,10 @@ interface CreatedStudySession {
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
+const emit = defineEmits<{
+  created: [studySession: CreatedStudySession]
+}>()
+
 const form = reactive({
   subjectId: '',
   taskId: '',
@@ -79,6 +83,7 @@ async function handleSubmit() {
     createdSession.value = response.studySession
     status.value = 'success'
     form.taskId = ''
+    emit('created', response.studySession)
   } catch (error) {
     status.value = 'error'
     errorMessage.value = extractErrorMessage(error)

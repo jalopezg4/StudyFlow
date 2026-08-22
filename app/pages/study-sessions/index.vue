@@ -1,8 +1,15 @@
 <script setup lang="ts">
+import { useTemplateRef } from 'vue'
 import StudySessionForm from '~/components/study-sessions/StudySessionForm.vue'
 import StudySessionList from '~/components/study-sessions/StudySessionList.vue'
 
 definePageMeta({ layout: 'authenticated' })
+
+const studySessionList = useTemplateRef('studySessionList')
+
+function handleCreated() {
+  studySessionList.value?.refresh()
+}
 </script>
 
 <template>
@@ -15,10 +22,10 @@ definePageMeta({ layout: 'authenticated' })
         </p>
 
         <div class="mt-6">
-          <StudySessionForm />
+          <StudySessionForm @created="handleCreated" />
         </div>
 
-        <StudySessionList />
+        <StudySessionList ref="studySessionList" />
       </div>
     </div>
   </div>
