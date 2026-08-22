@@ -44,6 +44,11 @@ function extractErrorMessage(error: unknown): string {
   return fetchError.data?.error?.message ?? 'Could not update the study session.'
 }
 
+function extractDeleteErrorMessage(error: unknown): string {
+  const fetchError = error as { data?: { error?: { message?: string } } }
+  return fetchError.data?.error?.message ?? 'Could not delete the study session. Please try again.'
+}
+
 async function loadSessions() {
   status.value = 'loading'
   try {
@@ -95,7 +100,7 @@ async function confirmDelete(id: string) {
     confirmingDeleteId.value = null
     deleteErrors[id] = ''
   } catch (error) {
-    deleteErrors[id] = extractErrorMessage(error)
+    deleteErrors[id] = extractDeleteErrorMessage(error)
   } finally {
     deletingId.value = null
   }
