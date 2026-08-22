@@ -61,13 +61,13 @@ specs/012-feedback-consistency/
 app/
 ├── components/
 │   ├── subjects/
-│   │   ├── SubjectForm.vue          # Modified: watch(form) clears a stale 'success'/'error' status
-│   │   │                            #   as soon as the student edits the form again (FR-006)
+│   │   ├── SubjectForm.vue          # Modified: an @input handler clears a stale 'success'/'error'
+│   │   │                            #   status as soon as the student edits the form again (FR-006)
 │   │   └── SubjectEditForm.vue      # Modified: add the same name/description character counters
 │   │                                #   SubjectForm.vue already shows (FR-010)
 │   ├── tasks/
-│   │   ├── TaskForm.vue             # Modified: watch(form) clears a stale 'success'/'error' status,
-│   │   │                            #   same pattern as SubjectForm.vue (FR-007)
+│   │   ├── TaskForm.vue             # Modified: an @input handler clears a stale 'success'/'error'
+│   │   │                            #   status, same pattern as SubjectForm.vue (FR-007)
 │   │   └── TaskEditForm.vue         # Modified: add the same title/description character counters
 │   │                                #   TaskForm.vue already shows (FR-011)
 │   └── study-sessions/

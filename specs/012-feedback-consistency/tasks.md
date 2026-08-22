@@ -56,14 +56,14 @@
 > Write first; confirm they fail until T015-T018 exist.
 
 - [ ] T011 [US2] Write a Playwright test in `tests/e2e/feedback-consistency.spec.ts`: after creating a subject successfully, starting to type a new name clears the "created successfully" message (AC05, subjects)
-- [ ] T012 [US2] Write a Playwright test in `tests/e2e/feedback-consistency.spec.ts`: after creating a task successfully, starting to type a new title clears the "created successfully" message (AC05, tasks) (same new file as T011 — sequence after it)
+- [X] T012 [US2] Write a Playwright test in `tests/e2e/feedback-consistency.spec.ts`: after creating a task successfully, starting to type a new title clears the "created successfully" message (AC05, tasks) (same new file as T011 — sequence after it). Implemented out of order at the user's explicit request before T011 existed; the file currently contains only this one test.
 - [ ] T013 [US2] Write a Playwright test in `tests/e2e/feedback-consistency.spec.ts`: a field-level error on the login form clears as soon as that field is edited again (AC07, login) (same file — sequence after T012)
 - [ ] T014 [US2] Write a Playwright test in `tests/e2e/feedback-consistency.spec.ts`: a field-level error on the register form clears as soon as that field is edited again (AC07, register) (same file — sequence after T013)
 
 ### Implementation for User Story 2
 
-- [ ] T015 [P] [US2] In `app/components/subjects/SubjectForm.vue`, add a `watch` on the form's `name`/`description` fields that resets `status` to `'idle'` and clears `errorMessage` once the student edits the form again after a success or error (FR-006)
-- [ ] T016 [P] [US2] In `app/components/tasks/TaskForm.vue`, add the same `watch`-based reset on the form's `title`/`description` fields (FR-007)
+- [ ] T015 [P] [US2] In `app/components/subjects/SubjectForm.vue`, add an `@input` handler on the `name`/`description` fields (a `clearStaleStatus()` function, not a reactive `watch` — see T016's note) that resets `status` to `'idle'` and clears `errorMessage` once the student edits the form again after a success or error (FR-006)
+- [X] T016 [P] [US2] In `app/components/tasks/TaskForm.vue`, add the same `@input`-driven reset on the form's `title`/`description` fields (FR-007). **Correction while implementing**: a reactive `watch` on `form.title`/`form.description` (as originally planned) does not work — the success handler's own programmatic reset of those fields to `''` also triggers the watcher, and because Vue batches the watcher callback to run after that reset already landed, it reads `status.value === 'success'` as true and immediately clears the message it was just supposed to show, before the student ever sees it. Confirmed by test failure, then fixed by tying the clear to the actual `@input` DOM event instead (which never fires for a script-driven `v-model` assignment), which is immune to this ordering issue. T015 and T023-equivalent SubjectForm work should follow this same `@input` pattern, not the originally-planned `watch`.
 - [ ] T017 [P] [US2] In `app/pages/login.vue`, clear only the touched field's own entry in `fieldErrors` as soon as that field is edited again, leaving any other field's error untouched (FR-008)
 - [ ] T018 [P] [US2] In `app/pages/register.vue`, apply the same per-field error clearing as `login.vue` (FR-009)
 - [ ] T019 [US2] Confirm T011-T014 pass against T015-T018
@@ -83,12 +83,12 @@
 > Write first; confirm they fail until T022-T023 exist.
 
 - [ ] T020 [US3] Write a Playwright test in `tests/e2e/feedback-consistency.spec.ts`: editing an existing subject shows a "current/limit" counter under name and description (AC06, subjects) (shares the file from Phase 2 — sequence after T014)
-- [ ] T021 [US3] Write a Playwright test in `tests/e2e/feedback-consistency.spec.ts`: editing an existing task shows a "current/limit" counter under title and description (AC06, tasks) (same file — sequence after T020)
+- [X] T021 [US3] Write a Playwright test in `tests/e2e/feedback-consistency.spec.ts`: editing an existing task shows a "current/limit" counter under title and description (AC06, tasks) (same file — sequence after T020). Implemented out of order at the user's explicit request before T020 existed; scoped the assertion to the edit row specifically, since the page's own create form also shows an unrelated "0/500" counter that would otherwise collide.
 
 ### Implementation for User Story 3
 
 - [ ] T022 [P] [US3] Add the same name/description character-counter markup from `SubjectForm.vue` to `app/components/subjects/SubjectEditForm.vue`, reusing its existing length constants (FR-010)
-- [ ] T023 [P] [US3] Add the same title/description character-counter markup from `TaskForm.vue` to `app/components/tasks/TaskEditForm.vue`, reusing its existing length constants (FR-011)
+- [X] T023 [P] [US3] Add the same title/description character-counter markup from `TaskForm.vue` to `app/components/tasks/TaskEditForm.vue`, reusing its existing length constants (FR-011)
 - [ ] T024 [US3] Confirm T020-T021 pass against T022-T023
 
 **Checkpoint**: User Stories 1-3 all work independently.
@@ -151,8 +151,8 @@ Despite this ordering, **User Stories 1, 2, 3, and 4 can be implemented in any o
 
 ```bash
 # All four can be assigned to different people at the same time:
-Task: "Add a watch-based stale-state reset to SubjectForm.vue"
-Task: "Add a watch-based stale-state reset to TaskForm.vue"
+Task: "Add an @input-driven stale-state reset to SubjectForm.vue"
+Task: "Add an @input-driven stale-state reset to TaskForm.vue"
 Task: "Add per-field error clearing to login.vue"
 Task: "Add per-field error clearing to register.vue"
 ```
