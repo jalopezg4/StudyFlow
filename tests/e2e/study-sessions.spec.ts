@@ -42,9 +42,13 @@ test.describe('Study session recording', () => {
     await page.getByLabel('Duration (minutes)').fill('20')
     await page.getByRole('button', { name: 'Record study session' }).click()
 
-    await expect(page.getByText('20 minutes')).toBeVisible()
+    // Scoped to the sessions list, not the page as a whole: the form's own
+    // success banner ("Study session recorded: 20 minutes.") also contains
+    // "20 minutes" and "Recorded", which made these locators ambiguous.
+    const sessionList = page.getByRole('list')
+    await expect(sessionList.getByText('20 minutes')).toBeVisible()
     await expect(page.getByText('1 total')).toBeVisible()
-    await expect(page.getByText(/Recorded/)).toBeVisible()
+    await expect(sessionList.getByText(/Recorded/)).toBeVisible()
   })
 
   test('shows the real error message next to a session when delete fails', async ({ page }) => {
@@ -59,7 +63,9 @@ test.describe('Study session recording', () => {
     await page.getByLabel('Subject').selectOption({ label: 'Delete Error Subject' })
     await page.getByLabel('Duration (minutes)').fill('15')
     await page.getByRole('button', { name: 'Record study session' }).click()
-    await expect(page.getByText('15 minutes')).toBeVisible()
+
+    const sessionList = page.getByRole('list')
+    await expect(sessionList.getByText('15 minutes')).toBeVisible()
 
     await page.route('**/api/study-sessions/*', async (route) => {
       if (route.request().method() === 'DELETE') {
@@ -77,7 +83,7 @@ test.describe('Study session recording', () => {
     await page.getByRole('button', { name: 'Confirm delete' }).click()
 
     await expect(page.getByText('Could not delete right now.')).toBeVisible()
-    await expect(page.getByText('15 minutes')).toBeVisible()
+    await expect(sessionList.getByText('15 minutes')).toBeVisible()
   })
 
   test('deletes a session via the inline confirm pattern, with no native browser dialog', async ({ page }) => {
@@ -98,13 +104,15 @@ test.describe('Study session recording', () => {
     await page.getByLabel('Subject').selectOption({ label: 'Inline Confirm Subject' })
     await page.getByLabel('Duration (minutes)').fill('30')
     await page.getByRole('button', { name: 'Record study session' }).click()
-    await expect(page.getByText('30 minutes')).toBeVisible()
+
+    const sessionList = page.getByRole('list')
+    await expect(sessionList.getByText('30 minutes')).toBeVisible()
 
     await page.getByRole('button', { name: 'Delete' }).click()
     await expect(page.getByText('Delete this study session? This action cannot be undone.')).toBeVisible()
 
     await page.getByRole('button', { name: 'Cancel' }).click()
-    await expect(page.getByText('30 minutes')).toBeVisible()
+    await expect(sessionList.getByText('30 minutes')).toBeVisible()
 
     await page.getByRole('button', { name: 'Delete' }).click()
     await page.getByRole('button', { name: 'Confirm delete' }).click()
