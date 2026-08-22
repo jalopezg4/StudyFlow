@@ -121,6 +121,14 @@ async function loadSubjectsForFilter() {
   }
 }
 
+function clearFilters() {
+  filters.status = ''
+  filters.subjectId = ''
+  filters.sortBy = ''
+  filters.sortDir = 'asc'
+  loadTasks()
+}
+
 async function loadTasks() {
   status.value = 'loading'
   errorMessage.value = ''
@@ -211,6 +219,16 @@ defineExpose({ refresh: loadTasks })
           <option value="asc">Ascending</option>
           <option value="desc">Descending</option>
         </select>
+      </div>
+
+      <div>
+        <button
+          type="button"
+          class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:border-slate-400 hover:bg-slate-50"
+          @click="clearFilters"
+        >
+          Clear filters
+        </button>
       </div>
     </div>
 

@@ -74,4 +74,41 @@ test.describe('Filter and Sort Study Tasks', () => {
 
     expect(await titlesInOrder(page, 2)).toEqual(['Alpha task', 'Zeta task'])
   })
+
+  test('"Clear filters" is always visible, resets everything in one click, no-ops with nothing active, and still settles on the unfiltered view when clicked mid-request', async ({ page }) => {
+    const { subjectAId } = await seedTasks(page)
+
+    const clearButton = page.getByRole('button', { name: 'Clear filters' })
+
+    // Always visible, even before any filter has been touched.
+    await expect(clearButton).toBeVisible()
+
+    // Harmless no-op with no filters active.
+    await clearButton.click()
+    await expect(page.locator('li strong')).toHaveCount(3)
+
+    // Applying all three filters, then clearing them all in one click.
+    await page.locator('#filter-subject').selectOption(subjectAId)
+    await page.getByLabel('Sort by').selectOption('title')
+    await page.getByLabel('Direction').selectOption('desc')
+    await expect(page.locator('li strong')).toHaveCount(2)
+
+    await expect(clearButton).toBeVisible()
+    await clearButton.click()
+    await expect(page.locator('li strong')).toHaveCount(3)
+    await expect(page.locator('#filter-subject')).toHaveValue('')
+    await expect(page.getByLabel('Sort by')).toHaveValue('')
+
+    // Clicking Clear filters while a previous filter change is still loading
+    // still lands on the default, unfiltered view once everything settles.
+    await page.route('**/api/tasks*', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 300))
+      await route.continue()
+    })
+    await page.locator('#filter-subject').selectOption(subjectAId)
+    await clearButton.click()
+
+    await expect(page.locator('li strong')).toHaveCount(3)
+    await expect(page.locator('#filter-subject')).toHaveValue('')
+  })
 })
