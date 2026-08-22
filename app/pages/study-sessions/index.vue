@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import StudySessionForm from '~/components/study-sessions/StudySessionForm.vue'
+import StudySessionList from '~/components/study-sessions/StudySessionList.vue'
 
 definePageMeta({ layout: 'authenticated' })
 </script>
@@ -16,6 +17,8 @@ definePageMeta({ layout: 'authenticated' })
         <div class="mt-6">
           <StudySessionForm />
         </div>
+
+        <StudySessionList />
       </div>
     </div>
   </div>
