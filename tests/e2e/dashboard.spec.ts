@@ -1,18 +1,5 @@
 import { expect, test } from '@playwright/test'
-
-const PASSWORD = 'TestPass123'
-
-function uniqueEmail(): string {
-  return `dashboard-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`
-}
-
-async function register(page: import('@playwright/test').Page): Promise<void> {
-  await page.goto('/register')
-  await page.getByLabel('Email').fill(uniqueEmail())
-  await page.getByLabel('Password', { exact: true }).fill(PASSWORD)
-  await page.getByRole('button', { name: 'Register' }).click()
-  await expect(page).toHaveURL(/\/dashboard$/)
-}
+import { registerAndLandOnDashboard } from './helpers'
 
 async function seedProgress(page: import('@playwright/test').Page): Promise<void> {
   const subjectResponse = await page.request.post('/api/subjects', {
@@ -47,22 +34,24 @@ async function seedProgress(page: import('@playwright/test').Page): Promise<void
 
 test.describe('Study progress dashboard', () => {
   test('shows task and study-time metrics for the authenticated student', async ({ page }) => {
-    await register(page)
+    await registerAndLandOnDashboard(page)
     await seedProgress(page)
     await page.goto('/dashboard')
 
     await expect(page.getByRole('heading', { name: 'Study progress' })).toBeVisible()
     await expect(page.getByText('3', { exact: true }).first()).toBeVisible()
-    await expect(page.getByText('67% complete')).toBeVisible()
+    await expect(page.getByText('67%', { exact: true })).toBeVisible()
+    await expect(page.getByText('2 of 3 tasks complete')).toBeVisible()
     await expect(page.getByText('135 minutes', { exact: false })).toBeVisible()
   })
 
   test('shows a valid empty state for a student without activity', async ({ page }) => {
-    await register(page)
+    await registerAndLandOnDashboard(page)
     await page.goto('/dashboard')
 
     await expect(page.getByText('No study activity yet.')).toBeVisible()
-    await expect(page.getByText('0% complete')).toBeVisible()
+    await expect(page.getByText('0%', { exact: true })).toBeVisible()
+    await expect(page.getByText('0 of 0 tasks complete')).toBeVisible()
     await expect(page.getByText('0 minutes across 0 sessions')).toBeVisible()
   })
 
