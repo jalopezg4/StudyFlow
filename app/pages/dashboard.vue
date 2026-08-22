@@ -13,8 +13,6 @@ interface ProgressSummary {
   hasActivity: boolean
 }
 
-const { logout } = useAuth()
-const isLoggingOut = ref(false)
 const progress = ref<ProgressSummary | null>(null)
 const progressStatus = ref<'loading' | 'loaded' | 'error'>('loading')
 
@@ -30,22 +28,21 @@ async function loadProgress() {
   }
 }
 
-async function onLogout() {
-  isLoggingOut.value = true
-  try {
-    await logout()
-  } finally {
-    await navigateTo('/login')
-  }
-}
-
 onMounted(loadProgress)
 </script>
 
 <template>
   <div class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 px-4 py-10">
     <div class="mx-auto max-w-2xl rounded-xl bg-white p-8 shadow-md ring-1 ring-slate-900/5">
-      <h1 class="text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">StudyFlow</p>
+          <h1 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+        </div>
+        <div class="hidden rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 sm:block">
+          Progress overview
+        </div>
+      </div>
       <p class="mt-4 text-slate-600">
         Your current study progress at a glance.
       </p>
@@ -69,21 +66,46 @@ onMounted(loadProgress)
             No study activity yet. Create a task or record a study session to start tracking your progress.
           </p>
 
-          <div class="grid grid-cols-2 gap-3 sm:grid-cols-3" :aria-label="progress.hasActivity ? 'Progress metrics' : 'Empty progress metrics'">
-            <div class="rounded-md border border-slate-200 p-3">
-              <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Tasks</p>
-              <p class="mt-1 text-2xl font-semibold text-slate-900">{{ progress.totalTasks }}</p>
-              <p class="text-xs text-slate-500">{{ progress.pendingTasks }} pending</p>
+          <div class="mt-5 rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-slate-50 p-5 shadow-sm">
+            <div class="flex items-end justify-between gap-4">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">Completion rate</p>
+                <p class="mt-2 text-3xl font-bold tracking-tight text-slate-900">{{ progress.completionPercentage }}%</p>
+              </div>
+              <p class="text-right text-sm font-medium text-slate-600">
+                {{ progress.completedTasks }} of {{ progress.totalTasks }} tasks complete
+              </p>
             </div>
-            <div class="rounded-md border border-slate-200 p-3">
-              <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Completed</p>
-              <p class="mt-1 text-2xl font-semibold text-slate-900">{{ progress.completedTasks }}</p>
-              <p class="text-xs text-slate-500">{{ progress.completionPercentage }}% complete</p>
+            <div
+              class="mt-4 h-3 overflow-hidden rounded-full bg-indigo-100"
+              role="progressbar"
+              aria-label="Task completion progress"
+              :aria-valuenow="progress.completionPercentage"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <div
+                class="h-full rounded-full bg-indigo-600 transition-all duration-700 ease-out"
+                :style="{ width: `${progress.completionPercentage}%` }"
+              />
             </div>
-            <div class="rounded-md border border-slate-200 p-3">
-              <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Study time</p>
-              <p class="mt-1 text-2xl font-semibold text-slate-900">{{ progress.totalStudyMinutes }}</p>
-              <p class="text-xs text-slate-500">minutes across {{ progress.totalStudySessions }} sessions</p>
+          </div>
+
+          <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3" :aria-label="progress.hasActivity ? 'Progress metrics' : 'Empty progress metrics'">
+            <div class="rounded-xl border border-slate-200 border-l-4 border-l-slate-400 bg-white p-4 shadow-sm">
+              <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Tasks</p>
+              <p class="mt-2 text-2xl font-semibold text-slate-900">{{ progress.totalTasks }}</p>
+              <p class="mt-1 text-xs text-slate-500">{{ progress.pendingTasks }} pending</p>
+            </div>
+            <div class="rounded-xl border border-emerald-100 border-l-4 border-l-emerald-500 bg-emerald-50/40 p-4 shadow-sm">
+              <p class="text-xs font-bold uppercase tracking-wide text-emerald-700">Completed</p>
+              <p class="mt-2 text-2xl font-semibold text-slate-900">{{ progress.completedTasks }}</p>
+              <p class="mt-1 text-xs text-emerald-700">tasks finished</p>
+            </div>
+            <div class="col-span-2 rounded-xl border border-amber-100 border-l-4 border-l-amber-500 bg-amber-50/40 p-4 shadow-sm sm:col-span-1">
+              <p class="text-xs font-bold uppercase tracking-wide text-amber-700">Study time</p>
+              <p class="mt-2 text-2xl font-semibold text-slate-900">{{ progress.totalStudyMinutes }}</p>
+              <p class="mt-1 text-xs text-amber-700">minutes across {{ progress.totalStudySessions }} sessions</p>
             </div>
           </div>
         </div>
