@@ -50,6 +50,12 @@ function extractErrorMessage(error: unknown): string {
   return fetchError.data?.error?.message ?? 'Could not update the study session.'
 }
 
+function validateDuration(minutes: number): string | null {
+  if (!Number.isInteger(minutes)) return 'Duration must be a whole number of minutes.'
+  if (minutes < 1 || minutes > 1440) return 'Duration must be between 1 and 1,440 minutes (24 hours).'
+  return null
+}
+
 async function loadSessions() {
   status.value = 'loading'
   try {
@@ -69,6 +75,12 @@ async function loadSessions() {
 }
 
 async function saveEdit(session: StudySession) {
+  const durationError = validateDuration(editDuration.value)
+  if (durationError) {
+    editErrorMessage.value = durationError
+    return
+  }
+
   editErrorMessage.value = ''
   try {
     const response = await $fetch<{ studySession: StudySession }>(`/api/study-sessions/${session.id}`, {

@@ -46,3 +46,10 @@ Recorded during implementation (T011), run from the project root:
 - `npm run build` — production build completes successfully.
 
 E2E scenarios (T004, T006, T008, T010) were added to `tests/e2e/study-sessions.spec.ts` covering AC01-AC04, but per the note above cannot be executed live in this environment (no local Supabase project configured); correctness was verified by manual trace against the final component code (T012).
+
+## Amendment (2026-08-22): client-side duration validation + production RLS gap
+
+Manual testing against the preview deployment surfaced two follow-ups beyond the original three tasks:
+
+- **Client-side duration validation**: `StudySessionForm.vue` and `StudySessionList.vue`'s inline edit now validate `durationMinutes` (integer, 1-1440) before calling the API, showing a specific message ("Duration must be between 1 and 1,440 minutes (24 hours).") instead of relying on the server's generic `VALIDATION_ERROR` message. This is additive to FR-004 (AC02), not a replacement — a server-side validation failure for any other reason still surfaces its own real message via the existing error-display fix.
+- **Production RLS gap (not a code bug)**: editing/deleting a session in the preview deployment returned 404 "Study session not found" for existing, owned sessions. `supabase/migrations/20260821000000_study_sessions_update_delete_policies.sql` already defines `study_sessions_update_own`/`study_sessions_delete_own`, but `pg_policies` on the live database only had `study_sessions_select_own`/`study_sessions_insert_own` — the same class of gap previously found and fixed for `subjects` during HU06. Resolved by running the two missing `CREATE POLICY` statements directly against the production database (no code or migration change needed, since the migration file was already correct).

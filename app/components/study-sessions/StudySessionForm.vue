@@ -46,6 +46,12 @@ function extractErrorMessage(error: unknown): string {
   return fetchError.data?.error?.message ?? 'Could not record the study session. Please try again.'
 }
 
+function validateDuration(minutes: number): string | null {
+  if (!Number.isInteger(minutes)) return 'Duration must be a whole number of minutes.'
+  if (minutes < 1 || minutes > 1440) return 'Duration must be between 1 and 1,440 minutes (24 hours).'
+  return null
+}
+
 async function loadResources() {
   loadStatus.value = 'loading'
 
@@ -67,6 +73,13 @@ function handleSubjectChange() {
 }
 
 async function handleSubmit() {
+  const durationError = validateDuration(form.durationMinutes)
+  if (durationError) {
+    status.value = 'error'
+    errorMessage.value = durationError
+    return
+  }
+
   status.value = 'loading'
   errorMessage.value = ''
   createdSession.value = null
