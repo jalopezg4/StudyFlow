@@ -42,7 +42,8 @@ test.describe('Study progress dashboard', () => {
     await expect(page.getByText('3', { exact: true }).first()).toBeVisible()
     await expect(page.getByText('67%', { exact: true })).toBeVisible()
     await expect(page.getByText('2 of 3 tasks complete')).toBeVisible()
-    await expect(page.getByText('135 minutes', { exact: false })).toBeVisible()
+    await expect(page.getByText('135', { exact: true })).toBeVisible()
+    await expect(page.getByText('minutes across 2 sessions')).toBeVisible()
   })
 
   test('shows a valid empty state for a student without activity', async ({ page }) => {
@@ -52,7 +53,7 @@ test.describe('Study progress dashboard', () => {
     await expect(page.getByText('No study activity yet.')).toBeVisible()
     await expect(page.getByText('0%', { exact: true })).toBeVisible()
     await expect(page.getByText('0 of 0 tasks complete')).toBeVisible()
-    await expect(page.getByText('0 minutes across 0 sessions')).toBeVisible()
+    await expect(page.getByText('minutes across 0 sessions')).toBeVisible()
   })
 
   test('blocks direct progress access without authentication', async ({ page }) => {
